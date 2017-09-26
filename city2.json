@@ -1,24 +1,58 @@
 {
     "map": {
         "network": {
-            "paths": {
-                "p000": {
-    
-                    "type": "road",
-                    "path": [
-                        {
-                            "x": 0,
-                            "y": 0
-                        },
-                        {
-                            "x": 1,
-                            "y": 1
-                        }
-                    ],
-                    "start": "n000",
-                    "end": "n001"
+            "edges": {
+                "e000": {
+                    "typeId": "road",
+                    "startId": "n000",
+                    "endId": "n001"
+                },
+                "e001": {
+                    "typeId": "road",
+                    "startId": "n001",
+                    "endId": "n002"
+                }
+            },
+            "nodes": {
+                "n000": {
+                    "coordinate": {
+                        "x": 0,
+                        "y": 0
+                    }
+                },
+                "n001": {
+                    "coordinate": {
+                        "x": 0,
+                        "y": 1
+                    }
+                },
+                "n002": {
+                    "coordinate": {
+                        "x": 0,
+                        "y": 2
+                    }
                 }
             }
+        },
+        "buildings": {
+            "b000": {
+                "typeId": "work"
+                "coordinate": {
+                    "x": 0,
+                    "y": 0,
+                    "rotation": 0
+                },
+                "edgeId": "e000"
+            },
+            "b001": {
+                "typeId": "home"
+                "coordinate": {
+                    "x": 0,
+                    "y": 2,
+                    "rotation": 0
+                },
+                "edgeId": "e001"
+            }        
         }
     }
 }

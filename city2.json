@@ -36,7 +36,7 @@
         },
         "buildings": {
             "b000": {
-                "typeId": "work"
+                "typeId": "work",
                 "coordinate": {
                     "x": 0,
                     "y": 0,
@@ -45,7 +45,7 @@
                 "edgeId": "e000"
             },
             "b001": {
-                "typeId": "home"
+                "typeId": "home",
                 "coordinate": {
                     "x": 0,
                     "y": 2,
@@ -54,5 +54,16 @@
                 "edgeId": "e001"
             }        
         }
+    },
+    "agents": {
+        "people": {
+            "p000": {
+                "workplaceId": "b000",
+                "homeId": "b001",
+            }
+        }
+    }
+    "simulation": {
+        "tick": 0,
     }
 }

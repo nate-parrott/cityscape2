@@ -60,6 +60,22 @@
             "p000": {
                 "workplaceId": "b000",
                 "homeId": "b001",
+                "position": {
+                    "edgeId": "e000",
+                    "distance": 0.3
+                },
+                "actions": [
+                    {
+                        "actionId": "travel",
+                        "destinationId": "b000"
+                    },
+                    {
+                        "actionId": "work",
+                        "remainingTicks": 8,
+                        "location": "b000"
+                    }
+                   ]
+                }
             }
         }
     },

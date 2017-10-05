@@ -6,3 +6,9 @@ var camera = new PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 
 var renderer = new WebGLRenderer();
 renderer.setSize( window.innerWidth, window.innerHeight );
 document.body.appendChild( renderer.domElement );
+
+self.fetch('city2.json').then((response) => {
+    return response.json();
+}).then((json) => {
+    console.log(json);
+})

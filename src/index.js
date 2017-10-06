@@ -1,3 +1,7 @@
+import { testRouting } from './tests';
+
+testRouting();
+
 import { 
     WebGLRenderer, 
     Mesh,

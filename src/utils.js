@@ -24,7 +24,7 @@ function PriorityQueue() {
 /*
 startPositions:
   (takes multiple b/c when we're in the middle of an edge, we can start at either end of the edge)
-  [ { id: <node id>,  cost: 0}, ... ]
+  [ { nodeId: <node id>,  cost: 0}, ... ]
 completionCostFunc:
   a function that takes a node id, and, if it's a valid node, returns the final associated cost
   (nodeId) -> double | null
@@ -50,14 +50,18 @@ let astar = function(startPositions, completionCostFunc, heuristicFunc, edgeFunc
     let completionCost = completionCostFunc(curNode);
     if (completionCost !== null) {
       // we found the path!
-      return {nodeIds, edgeIds, cost + completionCost};
+      return {nodeIds, edgeIds, cost: cost + completionCost};
     }
     for (let {edgeId, nodeId, edgeCost} of edgeFunc(curNode)) {
       let newVal = { nodeIds: nodeIds.concat([nodeId]), edgeIds: edgeIds.concat([edgeId]), cost: cost + edgeCost };
-      q.add({ nodeIds })
+      q.add(newVal);
     }
   }
   return null; // no path found
 }
 
-module.exports = {astar};
+let dist = (coord1, coord2) => {
+  return Math.sqrt(Math.pow(coord1.x - coord2.x, 2) + Math.pow(coord1.y - coord2.y, 2));
+}
+
+module.exports = {astar, dist};

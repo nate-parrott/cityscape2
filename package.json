@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "webpack --config webpack.config.js",
-    "develop": "node_modules/.bin/webpack-dev-server",
+    "develop": "node_modules/.bin/webpack-dev-server --watch -d",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

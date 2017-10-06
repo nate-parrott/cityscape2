@@ -1,3 +1,7 @@
+import { testRouting } from './tests';
+
+testRouting();
+
 import { Scene, PerspectiveCamera, WebGLRenderer } from 'three';
 
 var scene = new Scene();

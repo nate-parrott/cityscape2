@@ -23,6 +23,7 @@
     "webpack-dev-server": "^2.8.2"
   },
   "dependencies": {
-    "three": "^0.87.1"
+    "three": "^0.87.1",
+    "three-line-2d": "^1.1.6"
   }
 }

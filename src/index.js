@@ -1,6 +1,4 @@
-import { testRouting } from './tests';
-
-testRouting();
+import { testTicking } from './tests';
 
 import { 
     WebGLRenderer, 

@@ -11,6 +11,16 @@ export let city = {
           "typeId": "road",
           "startId": "n001",
           "endId": "n002"
+        },
+        "e000r": {
+          "typeId": "road",
+          "startId": "n001",
+          "endId": "n000"
+        },
+        "e001r": {
+          "typeId": "road",
+          "startId": "n002",
+          "endId": "n001"
         }
       },
       "nodes": {
@@ -65,15 +75,16 @@ export let city = {
           "distance": 0.3
         },
         "actions": [
-          {
-            "actionId": "travel",
-            "destinationId": "b000"
-          },
-          {
-            "actionId": "work",
-            "remainingTicks": 8,
-            "location": "b000"
-          }
+          {"actionId": "travel", "buildingId": "b000"},
+          {"actionId": "travel", "buildingId": "b001"},
+          {"actionId": "travel", "buildingId": "b000"},
+          {"actionId": "travel", "buildingId": "b001"},
+          {"actionId": "travel", "buildingId": "b000"},
+          {"actionId": "travel", "buildingId": "b001"},
+          {"actionId": "travel", "buildingId": "b000"},
+          {"actionId": "travel", "buildingId": "b001"},
+          {"actionId": "travel", "buildingId": "b000"},
+          {"actionId": "travel", "buildingId": "b001"}
         ]
       }
     }

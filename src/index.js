@@ -11,6 +11,7 @@ import * as THREE from 'three';
 
 self.THREE = THREE;
 require("./orbitControls");
+require("./dragControls");
 const LineMesh = require('three-line-2d')(THREE);
 const BasicShader = require('three-line-2d/shaders/basic')(THREE);
 
@@ -42,9 +43,9 @@ renderer.setClearColor( backgroundColor, 1 );
 document.body.appendChild( renderer.domElement );
 
 const networkNodeGeometry = new THREE.BoxBufferGeometry( 0.1, 0.1, 0.1 );
-networkNodeGeometry.translate(0, 0, 0.05);
+networkNodeGeometry.translate(0, 0, -0.05);
 const buildingGeometry = new THREE.BoxBufferGeometry( 1.0, 1.0, 1.0 );
-buildingGeometry.translate(0, 0, 0.5);
+buildingGeometry.translate(0, 0.5, 0.5);
 const personGeometry = new THREE.DodecahedronBufferGeometry( 0.1, 0 );
 personGeometry.translate(0, 0, .05);
 
@@ -86,10 +87,16 @@ const lerpCoordinates = ( coordinateA, coordinateB, progress ) => {
 let stateGroup = new THREE.Group();
 scene.add(stateGroup);
 
+const draggableObjects = [];
+// const dragControls = new THREE.DragControls( draggableObjects, camera, renderer.domElement );
+// dragControls.addEventListener( 'dragstart', function ( event ) { controls.enabled = false; } );
+// dragControls.addEventListener( 'dragend', function ( event ) { controls.enabled = true; } );
+
 const drawState = (state) => {
   // clear the old group state:
   while (stateGroup.children.length > 0) {
-    stateGroup.remove(stateGroup.children[0]); 
+    stateGroup.remove(stateGroup.children[0]);
+    // draggableObjects.length = 0;
   }
   
     const network = state.map.network;
@@ -101,6 +108,7 @@ const drawState = (state) => {
         nodeMesh.position.x = node.coordinate.x;
         nodeMesh.position.y = node.coordinate.y;
         stateGroup.add(nodeMesh);
+        draggableObjects.push(nodeMesh);
     }
     for(const edgeId in network.edges) {
         const edge = network.edges[edgeId];
@@ -123,10 +131,12 @@ const drawState = (state) => {
         const buildingMesh = new Mesh( buildingGeometry, buildingTypes[building.typeId].material );
         buildingMesh.position.x = building.coordinate.x;
         buildingMesh.position.y = building.coordinate.y;
+        buildingMesh.rotateZ(building.coordinate.rotation);
         buildingMesh.scale.x = building.dimension.x;
         buildingMesh.scale.y = building.dimension.y;
         buildingMesh.scale.z = building.dimension.z;
         stateGroup.add(buildingMesh);
+        draggableObjects.push(buildingMesh);
     }
     for(const personID in people) {
         const person = people[personID];
@@ -142,8 +152,27 @@ const drawState = (state) => {
         
         stateGroup.add(personMesh);
     }
-    // console.log(state);
 }
+
+// User Mutation Code
+
+const createEdge = (typeId, startId, endId) => {
+    const numEdges = city.map.network.edges.keys().length;
+    city.map.network.edges[`e{numNodes}`] = {
+        typeId,
+        startId,
+        endId,
+    };
+}
+
+const createNode = (coordinate) => {
+    const numNodes = city.map.network.nodes.keys().length;
+    city.map.network.nodes[`n{numNodes}`] = {
+        coordinate,
+    };
+}
+
+// Simulation Code
 
 const animate = () => {
   city = tick(city, timePerTick);

@@ -50,12 +50,12 @@ export let defaultCity = {
         "coordinate": {
           "x": 0,
           "y": 0,
-          "rotation": 0
+          "rotation": Math.PI
         },
         "dimension": {
           "x": 1.0,
-          "y": 0.75,
-          "z": 1.0
+          "y": 1.0,
+          "z": 2.0
         },
         "edgeId": "e000"
       },

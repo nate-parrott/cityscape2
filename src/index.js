@@ -176,8 +176,8 @@ const createNode = (coordinate) => {
 
 const animate = () => {
   city = tick(city, timePerTick);
-	requestAnimationFrame( animate );
   drawState(city);
+	requestAnimationFrame( animate );
 	renderer.render( scene, camera );
 }
 

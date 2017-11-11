@@ -1,4 +1,4 @@
-import { astar, dist, lerp, moveInDirection, distanceRatio } from './utils';
+import { astar, dist, lerp, moveInDirection, distanceRatio, closestPointToLineSegment } from './utils';
 
 export default class Network {
   constructor(net) {
@@ -44,17 +44,17 @@ export default class Network {
       return null;
     }
   }
-  moveToward(pos, destination, budget) {
-    // pos: {edgeId, distance}
-    // destination: {edgeId, coordinate}
+  moveToward(startEdgeId, startCoord, destEdgeId, destCoord, budget) {
     // returns {newPosition, remainingBudget, atDestination}
-    let startCoord = this.coord(pos.edgeId, pos.distance);
-    let routeEdges = this.calcRoute(startCoord, pos.edgeId, destination.coordinate, destination.edgeId);
+    startCoord = this.nearestCoordinate(startCoord, startEdgeId);
+    destCoord = this.nearestCoordinate(destCoord, destEdgeId);
+    
+    let routeEdges = this.calcRoute(startCoord, startEdgeId, destCoord, destEdgeId);
     
     let coord = startCoord;
-    let edgeId = pos.edgeId;
+    let edgeId = startEdgeId;
         
-    let atDest = () => edgeId === destination.edgeId && dist(coord, destination.coordinate) < 0.001;
+    let atDest = () => edgeId === destEdgeId && dist(coord, destCoord) < 0.001;
     
     if (!routeEdges) {
       console.log("no route");
@@ -63,13 +63,13 @@ export default class Network {
       return {newPosition: pos, remainingBudget: budget, atDestination: atDest()};
     }
     
-    for (let i=0; i<routeEdges.length; i++) {
+    for (let i=0; i < routeEdges.length; i++) {
       edgeId = routeEdges[i];
       
       let maxTravelDist;
       let endOfEdgeCoord = this.nodes[this.edges[edgeId].endId].coordinate;
       if (i === routeEdges.length - 1) {
-        maxTravelDist = dist(coord, destination.coordinate);
+        maxTravelDist = dist(coord, destCoord);
       } else {
         maxTravelDist = dist(coord, endOfEdgeCoord);
       }
@@ -94,5 +94,11 @@ export default class Network {
       }
     }
     return null;
+  }
+  nearestCoordinate(toCoord, onEdgeId) {
+    let {startId, endId} = this.edges[onEdgeId];
+    let v1 = this.nodes[startId].coordinate;
+    let v2 = this.nodes[endId].coordinate;
+    return closestPointToLineSegment(v1, v2, toCoord);
   }
 }

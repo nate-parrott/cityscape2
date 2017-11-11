@@ -1,4 +1,4 @@
-export let city = {
+export let defaultCity = {
   "map": {
     "network": {
       "edges": {
@@ -52,6 +52,11 @@ export let city = {
           "y": 0,
           "rotation": 0
         },
+        "dimension": {
+          "x": 1.0,
+          "y": 0.75,
+          "z": 1.0
+        },
         "edgeId": "e000"
       },
       "b001": {
@@ -60,6 +65,11 @@ export let city = {
           "x": 0,
           "y": 2,
           "rotation": 0
+        },
+        "dimension": {
+          "x": 1.0,
+          "y": 0.75,
+          "z": 1.0
         },
         "edgeId": "e001"
       }

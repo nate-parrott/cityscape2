@@ -24,16 +24,16 @@ class City { // cities should be used for ONE tick only, and then discarded
     this.simulation = json.simulation;
     this.network = new Network(this.map.network);
   }
-  tick() {
+  tick(time) {
     // each tick gives a time budget of 1 unit
-    this.tickAgents();
+    this.tickAgents(time);
     this.simulation.tick++;
     return this.json;
   }
-  tickAgents() {
+  tickAgents(time) {
     // tick people:
     for (let id of Object.keys(this.agents.people)) {
-      (new Person(this.agents.people[id], this)).tick();
+      (new Person(this.agents.people[id], this)).tick(time);
     }
   }
 }
@@ -43,8 +43,8 @@ class Person { // person objects should modify their internal json
     this.json = json;
     this.city = city;
   }
-  tick() {
-    let budget = 1;
+  tick(time) {
+    let budget = time;
     let tries = 0;
     while (budget > 0 && this.json.actions.length > 0 && tries < 10) {
       tries++;
@@ -71,7 +71,7 @@ class Person { // person objects should modify their internal json
   }
 }
 
-export let tick = function(city) {
-  return new City(city).tick();
+export let tick = function(city, time) {
+  return new City(city).tick(time);
 }
 

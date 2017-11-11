@@ -1,4 +1,6 @@
 import { testTicking } from './tests';
+import { defaultCity } from './city.js';
+import { tick } from './tick.js';
 
 import { 
     WebGLRenderer, 
@@ -70,11 +72,9 @@ grid.rotation.x = Math.PI / 2;
 grid.position.z = 0;
 scene.add(grid);
 
-const load = () => {
-    self.fetch('city2.json').then((response) => {
-        return response.json();
-    }).then(drawState);
-}
+// load the city json:
+let city = defaultCity;
+let timePerTick = 0.5 / 60;
 
 const lerpCoordinates = ( coordinateA, coordinateB, progress ) => {
     return {
@@ -83,7 +83,15 @@ const lerpCoordinates = ( coordinateA, coordinateB, progress ) => {
     }
 }
 
+let stateGroup = new THREE.Group();
+scene.add(stateGroup);
+
 const drawState = (state) => {
+  // clear the old group state:
+  while (stateGroup.children.length > 0) {
+    stateGroup.remove(stateGroup.children[0]); 
+  }
+  
     const network = state.map.network;
     const buildings = state.map.buildings;
     const people = state.agents.people;
@@ -92,7 +100,7 @@ const drawState = (state) => {
         const nodeMesh = new Mesh( networkNodeGeometry, networkNodeMaterial );
         nodeMesh.position.x = node.coordinate.x;
         nodeMesh.position.y = node.coordinate.y;
-        scene.add(nodeMesh);
+        stateGroup.add(nodeMesh);
     }
     for(const edgeId in network.edges) {
         const edge = network.edges[edgeId];
@@ -107,7 +115,7 @@ const drawState = (state) => {
             // ]);
             // edgeGeometry.addAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
             const edgeLine = new LineMesh( [[startNode.coordinate.x, startNode.coordinate.y], [endNode.coordinate.x, endNode.coordinate.y]] );
-            scene.add(new THREE.Mesh(edgeLine, networkEdgeMaterial));
+            stateGroup.add(new THREE.Mesh(edgeLine, networkEdgeMaterial));
         }
     }
     for(const buildingID in buildings) {
@@ -118,7 +126,7 @@ const drawState = (state) => {
         buildingMesh.scale.x = building.dimension.x;
         buildingMesh.scale.y = building.dimension.y;
         buildingMesh.scale.z = building.dimension.z;
-        scene.add(buildingMesh);
+        stateGroup.add(buildingMesh);
     }
     for(const personID in people) {
         const person = people[personID];
@@ -132,15 +140,16 @@ const drawState = (state) => {
         personMesh.position.x = coordinate.x;
         personMesh.position.y = coordinate.y;
         
-        scene.add(personMesh);
+        stateGroup.add(personMesh);
     }
-    console.log(state);
+    // console.log(state);
 }
 
 const animate = () => {
+  city = tick(city, timePerTick);
 	requestAnimationFrame( animate );
+  drawState(city);
 	renderer.render( scene, camera );
 }
 
-load();
 animate();

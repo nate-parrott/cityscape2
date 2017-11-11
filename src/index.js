@@ -3,25 +3,27 @@ import { testTicking } from './tests';
 import { 
     WebGLRenderer, 
     Mesh,
-    Line,
-    BufferGeometry,
-    BufferAttribute,
-    BoxBufferGeometry, 
-    MeshBasicMaterial,
-    LineBasicMaterial,
     GridHelper,
 } from 'three';
 import * as THREE from 'three';
+
 self.THREE = THREE;
-require("three/examples/js/controls/OrbitControls");
+require("./orbitControls");
+const LineMesh = require('three-line-2d')(THREE);
+const BasicShader = require('three-line-2d/shaders/basic')(THREE);
+
+
+// Main Simulation Display Code
 
 const backgroundColor = 0xffffff;
 const networkColor = 0x6F7A90;
 const residentialColor = 0xB3D28A;
 const commercialColor = 0xADD1FC;
+const personColor = 0xB5A8BA;
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+camera.up.set( 0, 0, 1 );
 camera.position.z = 5;
 const controls = new THREE.OrbitControls( camera );
 window.onresize = function () {
@@ -37,13 +39,22 @@ renderer.setSize( window.innerWidth, window.innerHeight );
 renderer.setClearColor( backgroundColor, 1 );
 document.body.appendChild( renderer.domElement );
 
-const networkNodeGeometry = new BoxBufferGeometry( 0.1, 0.1, 0.1 );
-const buildingGeometry = new BoxBufferGeometry( 0.2, 0.2, 0.2 );
+const networkNodeGeometry = new THREE.BoxBufferGeometry( 0.1, 0.1, 0.1 );
+networkNodeGeometry.translate(0, 0, 0.05);
+const buildingGeometry = new THREE.BoxBufferGeometry( 1.0, 1.0, 1.0 );
+buildingGeometry.translate(0, 0, 0.5);
+const personGeometry = new THREE.DodecahedronBufferGeometry( 0.1, 0 );
+personGeometry.translate(0, 0, .05);
 
-const commercialBuildingMaterial = new MeshBasicMaterial( { color: commercialColor } );
-const residentialBuildingMaterial = new MeshBasicMaterial( { color: residentialColor } );
-const networkNodeMaterial = new MeshBasicMaterial( { color: networkColor } );
-const networkEdgeMaterail = new LineBasicMaterial({ color: networkColor });
+const commercialBuildingMaterial = new THREE.MeshBasicMaterial( { color: commercialColor } );
+const residentialBuildingMaterial = new THREE.MeshBasicMaterial( { color: residentialColor } );
+const networkNodeMaterial = new THREE.MeshBasicMaterial( { color: networkColor } );
+const networkEdgeMaterial = new THREE.ShaderMaterial(BasicShader({
+    side: THREE.DoubleSide,
+    diffuse: networkColor,
+    thickness: 0.4
+}));
+const personMaterial = new THREE.MeshBasicMaterial({ color: personColor });
 
 const buildingTypes = {
     "work": {
@@ -56,7 +67,7 @@ const buildingTypes = {
 
 const grid = new GridHelper( 100, 100 );
 grid.rotation.x = Math.PI / 2;
-grid.position.z = -0.1;
+grid.position.z = 0;
 scene.add(grid);
 
 const load = () => {
@@ -65,9 +76,17 @@ const load = () => {
     }).then(drawState);
 }
 
+const lerpCoordinates = ( coordinateA, coordinateB, progress ) => {
+    return {
+        x: coordinateA.x + (coordinateB.x - coordinateA.x) * progress,
+        y: coordinateA.y + (coordinateB.y - coordinateA.y) * progress,
+    }
+}
+
 const drawState = (state) => {
     const network = state.map.network;
     const buildings = state.map.buildings;
+    const people = state.agents.people;
     for(const nodeID in network.nodes) {
         const node = network.nodes[nodeID];
         const nodeMesh = new Mesh( networkNodeGeometry, networkNodeMaterial );
@@ -81,15 +100,14 @@ const drawState = (state) => {
         const startNode = network.nodes[edge.startId];
         
         if (startNode && endNode) {
-            const edgeGeometry = new BufferGeometry();
-            const vertices = new Float32Array([
-                startNode.coordinate.x, startNode.coordinate.y, 0,
-                endNode.coordinate.x, endNode.coordinate.y, 0,
-            ]);
-            edgeGeometry.addAttribute( 'position', new BufferAttribute( vertices, 3 ) );
-            
-            const edgeLine = new Line( edgeGeometry, networkEdgeMaterail );
-            scene.add(edgeLine);
+            // const edgeGeometry = new THREE.BufferGeometry();
+            // const vertices = new Float32Array([
+            //     startNode.coordinate.x, startNode.coordinate.y, 0,
+            //     endNode.coordinate.x, endNode.coordinate.y, 0,
+            // ]);
+            // edgeGeometry.addAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
+            const edgeLine = new LineMesh( [[startNode.coordinate.x, startNode.coordinate.y], [endNode.coordinate.x, endNode.coordinate.y]] );
+            scene.add(new THREE.Mesh(edgeLine, networkEdgeMaterial));
         }
     }
     for(const buildingID in buildings) {
@@ -97,7 +115,24 @@ const drawState = (state) => {
         const buildingMesh = new Mesh( buildingGeometry, buildingTypes[building.typeId].material );
         buildingMesh.position.x = building.coordinate.x;
         buildingMesh.position.y = building.coordinate.y;
+        buildingMesh.scale.x = building.dimension.x;
+        buildingMesh.scale.y = building.dimension.y;
+        buildingMesh.scale.z = building.dimension.z;
         scene.add(buildingMesh);
+    }
+    for(const personID in people) {
+        const person = people[personID];
+        const edge = network.edges[person.position.edgeId];
+        const endNode = network.nodes[edge.endId];
+        const startNode = network.nodes[edge.startId];
+        
+        const coordinate = lerpCoordinates(startNode.coordinate, endNode.coordinate, person.position.distance);
+        
+        const personMesh = new Mesh( personGeometry, personMaterial );
+        personMesh.position.x = coordinate.x;
+        personMesh.position.y = coordinate.y;
+        
+        scene.add(personMesh);
     }
     console.log(state);
 }

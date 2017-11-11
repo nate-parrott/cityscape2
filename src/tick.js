@@ -60,8 +60,10 @@ class Person { // person objects should modify their internal json
   doAction(action, budget, personJson) {
     // returns {remainingBudget, isFinished}
     if (action.actionId === 'travel') {
+      // moveToward(startEdgeId, startCoord, destEdgeId, destCoord, budget)
       let dest = this.city.map.buildings[action.buildingId];
-      let {newPosition, remainingBudget, atDestination} = this.city.network.moveToward(this.json.position, dest, budget);
+      let fromCoord = this.city.network.coord(this.json.position.edgeId, this.json.position.distance);
+      let {newPosition, remainingBudget, atDestination} = this.city.network.moveToward(this.json.position.edgeId, fromCoord, dest.edgeId, dest.coordinate, budget);
       this.json.position = newPosition;
       return {remainingBudget, isFinished: atDestination};
     } else {
@@ -74,4 +76,3 @@ class Person { // person objects should modify their internal json
 export let tick = function(city, time) {
   return new City(city).tick(time);
 }
-

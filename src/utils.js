@@ -112,4 +112,42 @@ let distanceRatio = (fromCoord, toCoord, coord) => {
   return dist(fromCoord, coord) / dist(fromCoord, toCoord);
 }
 
-module.exports = {astar, dist, lerp, moveInDirection, distanceRatio};
+let addCoords = (a, b) => {
+  return {x: a.x + b.x, y: a.y + b.y};
+}
+
+let subCoords = (a, b) => {
+  return {x: a.x - b.x, y: a.y - b.y};
+}
+
+let coordTimesScalar = (a, k) => {
+  return {x: a.x * k, y: a.y * k};
+}
+
+let dot = (a, b) => {
+  return a.x * b.x + a.y * b.y;
+}
+
+// float minimum_distance(vec2 v, vec2 w, vec2 p) {
+//   // Return minimum distance between line segment vw and point p
+//   const float l2 = length_squared(v, w);  // i.e. |w-v|^2 -  avoid a sqrt
+//   if (l2 == 0.0) return distance(p, v);   // v == w case
+//   // Consider the line extending the segment, parameterized as v + t (w - v).
+//   // We find projection of point p onto the line.
+//   // It falls where t = [(p-v) . (w-v)] / |w-v|^2
+//   // We clamp t from [0,1] to handle points outside the segment vw.
+//   const float t = max(0, min(1, dot(p - v, w - v) / l2));
+//   const vec2 projection = v + t * (w - v);  // Projection falls on the segment
+//   return distance(p, projection);
+// }
+
+let closestPointToLineSegment = (v, w, p) => {
+  let l2 = Math.pow(v.x - w.x, 2) + Math.pow(v.y - w.y, 2);
+  if (l2 == 0) return v;
+  
+  let t = dot(subCoords(p, v), subCoords(w, v)) / l2;
+  t = Math.max(0, Math.min(1, t)); // clip between 0..1
+  return addCoords(v, coordTimesScalar(subCoords(w, v), t));
+}
+
+module.exports = {astar, dist, lerp, moveInDirection, distanceRatio, closestPointToLineSegment};

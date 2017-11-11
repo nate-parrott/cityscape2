@@ -73,7 +73,7 @@ THREE.OrbitControls = function ( object, domElement ) {
 	this.keys = { LEFT: 37, UP: 38, RIGHT: 39, BOTTOM: 40 };
 
 	// Mouse buttons
-	this.mouseButtons = { ORBIT: THREE.MOUSE.MIDDLE, PAN: THREE.MOUSE.LEFT }; //ZOOM: THREE.MOUSE.LEFT, 
+	this.mouseButtons = { ORBIT: THREE.MOUSE.RIGHT, PAN: THREE.MOUSE.LEFT }; //ZOOM: THREE.MOUSE.LEFT, 
 
 	// for reset
 	this.target0 = this.target.clone();

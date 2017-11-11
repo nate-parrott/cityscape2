@@ -54,7 +54,7 @@ const networkNodeMaterial = new THREE.MeshBasicMaterial( { color: networkColor }
 const networkEdgeMaterial = new THREE.ShaderMaterial(BasicShader({
     side: THREE.DoubleSide,
     diffuse: networkColor,
-    thickness: 0.4
+    thickness: 0.5
 }));
 const personMaterial = new THREE.MeshBasicMaterial({ color: personColor });
 

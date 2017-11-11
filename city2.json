@@ -32,6 +32,11 @@
             "y": 2
           }
         }
+      },
+      "types": {
+        "road": {
+          "lanes": ["auto", "auto", "sidewalk"]
+        }
       }
     },
     "buildings": {

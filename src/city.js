@@ -26,20 +26,20 @@ export let defaultCity = {
       "nodes": {
         "n000": {
           "coordinate": {
-            "x": 0,
+            "x": -5,
             "y": 0
           }
         },
         "n001": {
           "coordinate": {
             "x": 0,
-            "y": 1
+            "y": 0
           }
         },
         "n002": {
           "coordinate": {
-            "x": 0,
-            "y": 2
+            "x": 5,
+            "y": 0
           }
         }
       }
@@ -48,8 +48,8 @@ export let defaultCity = {
       "b000": {
         "typeId": "work",
         "coordinate": {
-          "x": 0,
-          "y": 0,
+          "x": -5,
+          "y": -0.5,
           "rotation": Math.PI
         },
         "dimension": {
@@ -62,8 +62,8 @@ export let defaultCity = {
       "b001": {
         "typeId": "home",
         "coordinate": {
-          "x": 0,
-          "y": 2,
+          "x": 5,
+          "y": 0.5,
           "rotation": 0
         },
         "dimension": {

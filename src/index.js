@@ -168,6 +168,8 @@ const CreateRoadTool = class extends Tool {
                 this.activeNodeMesh = undefined;
             }
         }
+        
+        console.log(this.city.simState); // TODO in lieu of real save/loading lol
     }
 }
 
@@ -227,20 +229,26 @@ const lerpCoordinates = ( coordinateA, coordinateB, progress ) => {
     }
 }
 
+city.simStateMeshcache = new Map();
+
 const drawState = (state) => {
   // clear the old group state:
   while (city.simStateGroup.children.length > 0) {
-    city.simStateGroup.remove(city.simStateGroup.children[0]);
+    // city.simStateGroup.remove(city.simStateGroup.children[0]);
     // draggableObjects.length = 0;
+    // TODO remove deleted nodes
   }
-  
     const network = state.map.network;
     const buildings = state.map.buildings;
     const people = state.agents.people;
     city.nodeMeshArray = [];
     for(const nodeID in network.nodes) {
         const node = network.nodes[nodeID];
-        const nodeMesh = new Mesh( networkNodeGeometry, networkNodeMaterial );
+        const nodeMesh = city.simStateMeshcache.has(nodeID) 
+            ? city.simStateMeshcache.get(nodeID) 
+            : city.simStateMeshcache.set(
+                nodeID, new Mesh( networkNodeGeometry, networkNodeMaterial )
+            ).get(nodeID);
         nodeMesh.position.x = node.coordinate.x;
         nodeMesh.position.y = node.coordinate.y;
         nodeMesh.bindingId = nodeID;
@@ -252,8 +260,13 @@ const drawState = (state) => {
         const edge = network.edges[edgeId];
         const endNode = network.nodes[edge.endId];
         const startNode = network.nodes[edge.startId];
+        if (city.simStateMeshcache.has(edgeId)) {
+            city.simStateGroup.remove(city.simStateMeshcache.get(edgeId));
+        }
         if (startNode && endNode) {
-            const edgeLine = new LineMesh( [[startNode.coordinate.x, startNode.coordinate.y], [endNode.coordinate.x, endNode.coordinate.y]] );
+            const edgeLine = city.simStateMeshcache.set(
+                edgeId, new LineMesh( [[startNode.coordinate.x, startNode.coordinate.y], [endNode.coordinate.x, endNode.coordinate.y]] )
+            ).get(edgeId);
             edgeLine.bindingId = edgeId;
             city.simStateGroup.add(new THREE.Mesh(edgeLine, networkEdgeMaterial));
             city.edgeMeshArray.push(edgeLine);
@@ -262,7 +275,11 @@ const drawState = (state) => {
     city.buildingMeshArray = [];
     for(const buildingID in buildings) {
         const building = buildings[buildingID];
-        const buildingMesh = new Mesh( buildingGeometry, buildingTypes[building.typeId].material );
+        const buildingMesh = city.simStateMeshcache.has(buildingID) 
+            ? city.simStateMeshcache.get(buildingID) 
+            : city.simStateMeshcache.set(
+                buildingID, new Mesh( buildingGeometry, buildingTypes[building.typeId].material )
+            ).get(buildingID);
         buildingMesh.position.x = building.coordinate.x;
         buildingMesh.position.y = building.coordinate.y;
         buildingMesh.rotateZ(building.coordinate.rotation);
@@ -280,7 +297,11 @@ const drawState = (state) => {
         const endNode = network.nodes[edge.endId];
         const startNode = network.nodes[edge.startId];
         const coordinate = lerpCoordinates(startNode.coordinate, endNode.coordinate, person.position.distance);
-        const personMesh = new Mesh( personGeometry, personMaterial );
+        const personMesh = city.simStateMeshcache.has(personID) 
+            ? city.simStateMeshcache.get(personID) 
+            : city.simStateMeshcache.set(
+                personID, new Mesh( personGeometry, personMaterial )
+            ).get(personID);
         personMesh.position.x = coordinate.x;
         personMesh.position.y = coordinate.y;
         personMesh.bindingId = personID;

@@ -1,7 +1,7 @@
 import { tick } from './tick.js';
 import Network from './network';
 import { testNetwork, simpleNetwork, littleLoopNetwork } from './testNetwork';
-import { city } from './city.js';
+import { defaultCity } from './city.js';
 
 export function testRouting() {
   // test routing:

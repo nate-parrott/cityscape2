@@ -106,6 +106,7 @@ city.scene.add(city.interfaceStateGroup);
 // load the city json:
 city.simState = defaultCity;
 let timePerTick = 0.5 / 60;
+let tickFrequency = 100;
 
 // User Interaction
 const Tool = class {
@@ -168,6 +169,8 @@ const CreateRoadTool = class extends Tool {
                 this.activeNodeMesh = undefined;
             }
         }
+        
+        console.log(this.city.simState) // todo in lieu of actual save/load lol
     }
 }
 
@@ -291,10 +294,13 @@ const drawState = (state) => {
 
 // Simulation Code
 
+setInterval(() => {
+    city.simState = tick(city.simState, timePerTick);
+    drawState(city.simState);
+}, tickFrequency)
+
 const animate = () => {
-  city.simState = tick(city.simState, timePerTick);
-  drawState(city.simState);
-	requestAnimationFrame( animate );
+    requestAnimationFrame( animate );
 	city.renderer.render( city.scene, city.camera );
 }
 

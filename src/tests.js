@@ -1,7 +1,7 @@
 import { tick } from './tick.js';
 import Network from './network';
 import { testNetwork, simpleNetwork, littleLoopNetwork } from './testNetwork';
-import { city } from './city.js';
+import { defaultCity } from './city.js';
 
 export function testRouting() {
   // test routing:
@@ -26,7 +26,7 @@ export function testMotion() {
 }
 
 export function testTicking() {
-  let c = city;
+  let c = defaultCity;
   while (c.simulation.tick < 10) {
     console.log("TICK: ", c.simulation.tick);
     c = tick(c);

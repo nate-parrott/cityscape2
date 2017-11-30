@@ -195,7 +195,7 @@ const DisplayInfoTool = class extends Tool {
             console.log(nodeIntersects[0].object);
         }
         
-        console.log(this.city.simState) // todo in lieu of actual save/load lol
+        console.log(this.city) // todo in lieu of actual save/load lol
     }
 }
 
@@ -311,10 +311,11 @@ const drawState = (state) => {
         }
         if (startNode && endNode) {
             const edgeLine = new LineMesh( [[startNode.coordinate.x, startNode.coordinate.y], [endNode.coordinate.x, endNode.coordinate.y]] );
-            edgeLine.bindingId = edgeId;
-            city.simStateGroup.add(new THREE.Mesh(edgeLine, networkEdgeMaterial));
-            city.edgeMeshArray.push(edgeLine);
-            city.meshCache.set(edgeId, edgeLine);
+            const edgeMesh = new THREE.Mesh(edgeLine, networkEdgeMaterial)
+            edgeMesh.bindingId = edgeId;
+            city.simStateGroup.add(edgeMesh);
+            city.edgeMeshArray.push(edgeMesh);
+            city.meshCache.set(edgeId, edgeMesh);
         }
     }
     city.buildingMeshArray = [];

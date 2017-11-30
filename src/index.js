@@ -105,7 +105,7 @@ city.scene.add(city.interfaceStateGroup);
 
 // load the city json:
 city.simState = defaultCity;
-let timePerTick = 0.5 / 60;
+let timePerTick = 1 / 60;
 let tickFrequency = 100;
 
 // User Interaction
@@ -117,7 +117,6 @@ const Tool = class {
     }
     
     setPointerVector(evt) {
-        console.log(this.city);
         const rect = this.city.renderer.domElement.getBoundingClientRect();
         this.pointerVector.x = (( evt.clientX - rect.left ) / rect.width ) * 2 - 1;
         this.pointerVector.y = -(( evt.clientY - rect.top ) / rect.height ) * 2 + 1;
@@ -169,13 +168,39 @@ const CreateRoadTool = class extends Tool {
                 this.activeNodeMesh = undefined;
             }
         }
+    }
+}
+
+const DisplayInfoTool = class extends Tool {
+    constructor(city) {
+        super(city);
+    }
+    
+    onInteraction(evt) {
+        switch(evt.type) {
+            case 'click':
+                this.onClick(evt);
+                break;
+            default:
+                break;
+        }
+    }
+    
+    onClick(evt) {
+        this.setPointerVector(evt);
+        this.rayCaster.setFromCamera(this.pointerVector, this.city.camera);
+        const nodeIntersects = this.rayCaster.intersectObjects(this.city.simStateGroup.children);
+        
+        if (nodeIntersects.length > 0) {
+            console.log(nodeIntersects[0].object);
+        }
         
         console.log(this.city.simState) // todo in lieu of actual save/load lol
     }
 }
 
 city.interfaceState = {
-    activeTool: new CreateRoadTool(city),
+    activeTool: new DisplayInfoTool(city),
 }
 
 const toolEventDispatcher = (evt) => {
@@ -230,12 +255,40 @@ const lerpCoordinates = ( coordinateA, coordinateB, progress ) => {
     }
 }
 
+city.meshCache = new Map();
+
+const createNodeMesh = ( nodeID ) => {
+    const nodeMesh = new Mesh( networkNodeGeometry, networkNodeMaterial );
+    nodeMesh.bindingId = nodeID;
+    city.simStateGroup.add(nodeMesh);
+    city.meshCache.set(nodeID, nodeMesh);
+    return nodeMesh;
+}
+
+const createBuildingMesh = ( buildingID, building ) => {
+    const buildingMesh = new Mesh( buildingGeometry, buildingTypes[building.typeId].material );
+    buildingMesh.bindingId = buildingID;
+    city.simStateGroup.add(buildingMesh);
+    city.meshCache.set(buildingID, buildingMesh);
+    return buildingMesh;
+}
+
+const createPersonMesh = ( personID ) => {
+    const personMesh = new Mesh( personGeometry, personMaterial );
+    personMesh.bindingId = personID;
+    city.simStateGroup.add(personMesh);
+    city.meshCache.set(personID, personMesh);
+    return personMesh;
+}
+
+const zAxis = new THREE.Vector3(0,0,1);
+
 const drawState = (state) => {
-  // clear the old group state:
-  while (city.simStateGroup.children.length > 0) {
-    city.simStateGroup.remove(city.simStateGroup.children[0]);
-    // draggableObjects.length = 0;
-  }
+    // clear the old group state:
+    // while (city.simStateGroup.children.length > 0) {
+    //    city.simStateGroup.remove(city.simStateGroup.children[0]);
+    //    // draggableObjects.length = 0;
+    //}
   
     const network = state.map.network;
     const buildings = state.map.buildings;
@@ -243,37 +296,37 @@ const drawState = (state) => {
     city.nodeMeshArray = [];
     for(const nodeID in network.nodes) {
         const node = network.nodes[nodeID];
-        const nodeMesh = new Mesh( networkNodeGeometry, networkNodeMaterial );
+        const nodeMesh = city.meshCache.has(nodeID) ? city.meshCache.get(nodeID) : createNodeMesh(nodeID);
         nodeMesh.position.x = node.coordinate.x;
         nodeMesh.position.y = node.coordinate.y;
-        nodeMesh.bindingId = nodeID;
-        city.simStateGroup.add(nodeMesh);
-        city.nodeMeshArray.push(nodeMesh);
+        city.nodeMeshArray.push(nodeMesh); //TODO replace with 3js groups
     }
     city.edgeMeshArray = [];
     for(const edgeId in network.edges) {
         const edge = network.edges[edgeId];
         const endNode = network.nodes[edge.endId];
         const startNode = network.nodes[edge.startId];
+        if (city.meshCache.has(edgeId)) {
+            city.simStateGroup.remove(city.meshCache.get(edgeId));
+        }
         if (startNode && endNode) {
             const edgeLine = new LineMesh( [[startNode.coordinate.x, startNode.coordinate.y], [endNode.coordinate.x, endNode.coordinate.y]] );
             edgeLine.bindingId = edgeId;
             city.simStateGroup.add(new THREE.Mesh(edgeLine, networkEdgeMaterial));
             city.edgeMeshArray.push(edgeLine);
+            city.meshCache.set(edgeId, edgeLine);
         }
     }
     city.buildingMeshArray = [];
     for(const buildingID in buildings) {
         const building = buildings[buildingID];
-        const buildingMesh = new Mesh( buildingGeometry, buildingTypes[building.typeId].material );
+        const buildingMesh = city.meshCache.has(buildingID) ? city.meshCache.get(buildingID) : createBuildingMesh(buildingID, building);
         buildingMesh.position.x = building.coordinate.x;
         buildingMesh.position.y = building.coordinate.y;
-        buildingMesh.rotateZ(building.coordinate.rotation);
+        buildingMesh.setRotationFromAxisAngle(zAxis, building.coordinate.rotation);
         buildingMesh.scale.x = building.dimension.x;
         buildingMesh.scale.y = building.dimension.y;
         buildingMesh.scale.z = building.dimension.z;
-        buildingMesh.bindingId = buildingID;
-        city.simStateGroup.add(buildingMesh);
         city.buildingMeshArray.push(buildingMesh);
     }
     city.personMeshArray = [];
@@ -283,11 +336,9 @@ const drawState = (state) => {
         const endNode = network.nodes[edge.endId];
         const startNode = network.nodes[edge.startId];
         const coordinate = lerpCoordinates(startNode.coordinate, endNode.coordinate, person.position.distance);
-        const personMesh = new Mesh( personGeometry, personMaterial );
+        const personMesh = city.meshCache.has(personID) ? city.meshCache.get(personID) : createPersonMesh(personID);
         personMesh.position.x = coordinate.x;
         personMesh.position.y = coordinate.y;
-        personMesh.bindingId = personID;
-        city.simStateGroup.add(personMesh);
         city.personMeshArray.push(personMesh);
     }
 }

@@ -523,7 +523,7 @@ export let defaultCity = {
         "typeId": "work",
         "coordinate": {
           "x": -4,
-          "y": 3.5,
+          "y": 2.5,
           "rotation": 3.141592653589793
         },
         "dimension": {
@@ -537,7 +537,7 @@ export let defaultCity = {
         "typeId": "work",
         "coordinate": {
           "x": -3,
-          "y": 3.5,
+          "y": 2.5,
           "rotation": 3.141592653589793
         },
         "dimension": {
@@ -551,7 +551,7 @@ export let defaultCity = {
         "typeId": "work",
         "coordinate": {
           "x": -2,
-          "y": 3.5,
+          "y": 2.5,
           "rotation": 3.141592653589793
         },
         "dimension": {
@@ -565,7 +565,7 @@ export let defaultCity = {
         "typeId": "work",
         "coordinate": {
           "x": -1,
-          "y": 3.5,
+          "y": 2.5,
           "rotation": 3.141592653589793
         },
         "dimension": {

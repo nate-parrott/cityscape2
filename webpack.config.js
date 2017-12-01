@@ -6,5 +6,17 @@ module.exports = {
     filename: 'bundle.js',
     path: path.resolve(__dirname, 'dist')
   },
-  devtool: 'source-map'
+  devtool: 'source-map',
+  module: {
+    loaders: [
+      {
+        test: /\.js?$/,
+        exclude: /node_modules/,
+        loader: 'babel-loader',
+        query: {
+          presets:[ 'es2015', 'stage-2' ]
+        }
+      }
+    ]
+  }
 };

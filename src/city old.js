@@ -1,5 +1,3 @@
-import {newApartment, newWorkplace, newAgent} from './generation.js';
-
 export let defaultCity = {
   "map": {
     "network": {
@@ -366,7 +364,7 @@ export let defaultCity = {
     },
     "buildings": {
       "b000": {
-        ...newWorkplace(),
+        "typeId": "work",
         "coordinate": {
           "x": -5,
           "y": -0.5,
@@ -380,7 +378,7 @@ export let defaultCity = {
         "edgeId": "e000"
       },
       "b001": {
-        ...newApartment(),
+        "typeId": "home",
         "coordinate": {
           "x": 5,
           "y": 0.5,
@@ -394,7 +392,7 @@ export let defaultCity = {
         "edgeId": "e001"
       },
       "b002": {
-        ...newWorkplace(),
+        "typeId": "work",
         "coordinate": {
           "x": -4,
           "y": -0.5,
@@ -408,7 +406,7 @@ export let defaultCity = {
         "edgeId": "e000"
       },
       "b003": {
-        ...newWorkplace(),
+        "typeId": "work",
         "coordinate": {
           "x": -3,
           "y": -0.5,
@@ -422,7 +420,7 @@ export let defaultCity = {
         "edgeId": "e000"
       },
       "b004": {
-        ...newWorkplace(),
+        "typeId": "work",
         "coordinate": {
           "x": -2,
           "y": -0.5,
@@ -436,7 +434,7 @@ export let defaultCity = {
         "edgeId": "e000"
       },
       "b005": {
-        ...newWorkplace(),
+        "typeId": "work",
         "coordinate": {
           "x": -1,
           "y": -0.5,
@@ -451,7 +449,7 @@ export let defaultCity = {
       },
       
       "b006": {
-        ...newWorkplace(),
+        "typeId": "work",
         "coordinate": {
           "x": -4,
           "y": -2.5,
@@ -465,7 +463,7 @@ export let defaultCity = {
         "edgeId": "e000"
       },
       "b007": {
-        ...newWorkplace(),
+        "typeId": "work",
         "coordinate": {
           "x": -3,
           "y": -2.5,
@@ -479,7 +477,7 @@ export let defaultCity = {
         "edgeId": "e000"
       },
       "b008": {
-        ...newWorkplace(),
+        "typeId": "work",
         "coordinate": {
           "x": -2,
           "y": -2.5,
@@ -493,7 +491,7 @@ export let defaultCity = {
         "edgeId": "e000"
       },
       "b009": {
-        ...newWorkplace(),
+        "typeId": "work",
         "coordinate": {
           "x": -1,
           "y": -2.5,
@@ -507,7 +505,7 @@ export let defaultCity = {
         "edgeId": "e000"
       },
       "b010": {
-        ...newWorkplace(),
+        "typeId": "work",
         "coordinate": {
           "x": -5,
           "y": -2.5,
@@ -522,10 +520,10 @@ export let defaultCity = {
       },
       
       "b011": {
-        ...newWorkplace(),
+        "typeId": "work",
         "coordinate": {
           "x": -4,
-          "y": 3.5,
+          "y": 2.5,
           "rotation": 3.141592653589793
         },
         "dimension": {
@@ -536,10 +534,10 @@ export let defaultCity = {
         "edgeId": "e000"
       },
       "b012": {
-        ...newWorkplace(),
+        "typeId": "work",
         "coordinate": {
           "x": -3,
-          "y": 3.5,
+          "y": 2.5,
           "rotation": 3.141592653589793
         },
         "dimension": {
@@ -550,10 +548,10 @@ export let defaultCity = {
         "edgeId": "e000"
       },
       "b013": {
-        ...newWorkplace(),
+        "typeId": "work",
         "coordinate": {
           "x": -2,
-          "y": 3.5,
+          "y": 2.5,
           "rotation": 3.141592653589793
         },
         "dimension": {
@@ -564,10 +562,10 @@ export let defaultCity = {
         "edgeId": "e000"
       },
       "b014": {
-        ...newWorkplace(),
+        "typeId": "work",
         "coordinate": {
           "x": -1,
-          "y": 3.5,
+          "y": 2.5,
           "rotation": 3.141592653589793
         },
         "dimension": {
@@ -579,7 +577,7 @@ export let defaultCity = {
       },
       
       "b015": {
-        ...newWorkplace(),
+        "typeId": "work",
         "coordinate": {
           "x": -4,
           "y": .5,
@@ -593,7 +591,7 @@ export let defaultCity = {
         "edgeId": "e000"
       },
       "b016": {
-        ...newWorkplace(),
+        "typeId": "work",
         "coordinate": {
           "x": -3,
           "y": .5,
@@ -607,7 +605,7 @@ export let defaultCity = {
         "edgeId": "e000"
       },
       "b017": {
-        ...newWorkplace(),
+        "typeId": "work",
         "coordinate": {
           "x": -2,
           "y": .5,
@@ -621,7 +619,7 @@ export let defaultCity = {
         "edgeId": "e000"
       },
       "b018": {
-        ...newWorkplace(),
+        "typeId": "work",
         "coordinate": {
           "x": -1,
           "y": .5,
@@ -635,7 +633,7 @@ export let defaultCity = {
         "edgeId": "e000"
       },
       "b019": {
-        ...newWorkplace(),
+        "typeId": "work",
         "coordinate": {
           "x": -5,
           "y": .5,
@@ -653,9 +651,41 @@ export let defaultCity = {
   "agents": {
     "people": {
       "p000": {
-        ...newAgent(),
-        actions: [
-          {actionId: 'travel', buildingId: 'b000'}        
+        "workplaceId": "b000",
+        "homeId": "b001",
+        "position": {
+          "edgeId": "e000",
+          "distance": 0.8599999999999988
+        },
+        "actions": [
+          {
+            "actionId": "travel",
+            "buildingId": "b001"
+          },
+          {
+            "actionId": "travel",
+            "buildingId": "b000"
+          },
+          {
+            "actionId": "travel",
+            "buildingId": "b001"
+          },
+          {
+            "actionId": "travel",
+            "buildingId": "b000"
+          },
+          {
+            "actionId": "travel",
+            "buildingId": "b001"
+          },
+          {
+            "actionId": "travel",
+            "buildingId": "b000"
+          },
+          {
+            "actionId": "travel",
+            "buildingId": "b001"
+          }
         ]
       }
     }

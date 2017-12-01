@@ -3,6 +3,7 @@ import { defaultCity } from './city.js';
 import { tick } from './tick.js';
 
 let xyz = {...{x: 1}, y: 1};
+console.log(defaultCity);
 
 import { 
     WebGLRenderer, 

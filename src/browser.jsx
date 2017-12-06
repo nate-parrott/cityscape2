@@ -54,7 +54,7 @@ class Browser extends Component {
 	renderContent() {
 		if (!this.state.nav) return null;
 		let Component = this.state.nav.component;
-		return <Component navigate={this.navigate.bind(this)} simState={this.state.simState} />;
+		return <Component navigate={this.navigate.bind(this)} simState={this.state.simState} {...this.state.nav} />;
 	}
 }
 

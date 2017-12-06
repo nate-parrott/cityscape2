@@ -3,3 +3,40 @@
 	text-align: center;
 	font-family: monospace;
 }
+.WebLink {
+	color: blue;
+	text-decoration: underline;
+	cursor: pointer;
+}
+.friendster-pages-shared {
+	font-family: "Verdana", sans-serif;
+	margin: 10px;
+}
+.friendster-pages-shared:before {
+	display: block;
+	content: "Friendster";
+	background-color: #00a;
+	color: white;
+	font-weight: bold;
+	font-size: large;
+	padding: 5px 10px;
+	margin-top: 10px;
+	margin-bottom: 10px;
+}
+.FriendsterPage {
+	
+}
+.FriendsterPage ul {
+	padding: 0;
+}
+.FriendCell {
+	display: flex;
+	flex-direction: row;
+}
+.FriendCell img {
+	width: 60px;
+	margin-right: 10px;
+}
+.FriendsterProfile img {
+	width: 80px;
+}

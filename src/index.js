@@ -1,6 +1,7 @@
 import { testTicking } from './tests';
 import { defaultCity } from './city.js';
 import { tick } from './tick.js';
+import { showBrowserWindow } from './browser.jsx';
 
 let xyz = {...{x: 1}, y: 1};
 console.log(defaultCity);
@@ -62,14 +63,16 @@ const buildingTypes = {
 const city = {
     scene: new THREE.Scene(),
 }
-city.camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
-city.camera.up.set( 0, 0, 1 );
-city.camera.position.z = 5;
-city.controls = new THREE.OrbitControls( city.camera );
 
 city.renderer = new WebGLRenderer({
     antialias: true,
 });
+
+city.camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+city.camera.up.set( 0, 0, 1 );
+city.camera.position.z = 5;
+city.controls = new THREE.OrbitControls( city.camera, city.renderer.domElement );
+
 city.renderer.setSize( window.innerWidth, window.innerHeight );
 city.renderer.setClearColor( backgroundColor, 1 );
 document.body.appendChild( city.renderer.domElement );
@@ -359,4 +362,5 @@ const animate = () => {
 	city.renderer.render( city.scene, city.camera );
 }
 
+showBrowserWindow(city);
 animate();

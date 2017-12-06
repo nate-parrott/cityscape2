@@ -56,6 +56,7 @@ export let newAgent = (ageFraction) => {
     homeId: null,
     ageYears: age,
     wealth: 5,
+		name: 'Test Name',
     position: {
       edgeId: "e000",
       distance: 0.3

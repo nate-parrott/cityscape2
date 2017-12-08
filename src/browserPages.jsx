@@ -47,3 +47,14 @@ let FriendsterProfile = ({agentId, navigate, simState}) => {
 		</div>
 	)
 }
+
+export let RoomsterPage = ({navigate, simState}) => {
+	return (
+		<div className='RoomsterPage roomster-pages-shared'>
+			<header>
+				<img src='/webAssets/Roomster.png' />
+				<p>Live where you love. Love where you live. Love where you love.</p>
+			</header>
+		</div>
+	)
+}

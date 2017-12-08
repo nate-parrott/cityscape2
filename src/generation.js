@@ -1,5 +1,6 @@
 import Constants from './constants.js';
 let { minDailyWage, maxDailyWage, lifespanYears } = Constants;
+import { personName, apartmentName } from './generateNames.js';
 import { generateId } from './utils.js';
 
 let jobs = {
@@ -28,6 +29,7 @@ let generateJob = (id) => {
 export let newApartment = () => {
   return {
     typeId: 'home',
+		name: apartmentName(),
     occupancy: 1,
     occupants: [],
     rent: 1,
@@ -56,7 +58,7 @@ export let newAgent = (ageFraction) => {
     homeId: null,
     ageYears: age,
     wealth: 5,
-		name: 'Test Name',
+		name: personName(),
     position: {
       edgeId: "e000",
       distance: 0.3

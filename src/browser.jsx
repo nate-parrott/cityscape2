@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import { WelcomePage, FriendsterPage } from './browserPages.jsx';
+import { WelcomePage, FriendsterPage, RoomsterPage } from './browserPages.jsx';
 
 let bookmarks = [
 	{title: 'Home', nav: {component: WelcomePage}},
 	{title: 'Friendster', nav: {component: FriendsterPage}},
 	{title: 'Jobster', nav: {component: FriendsterPage}},
-	{title: 'Roomster', nav: {component: FriendsterPage}}
+	{title: 'Roomster', nav: {component: RoomsterPage}}
 ]
 
 class Browser extends Component {
@@ -104,7 +104,8 @@ export let showBrowserWindow = (city) => {
 	let div = document.createElement("div");
 	document.body.appendChild(div);
 	let onClose = () => {
-		// TODO
+		ReactDOM.unmountComponentAtNode(div);
+		div.parentElement.removeChild(div);
 	}
 	ReactDOM.render(<FloatingWindow onClose={onClose} title="Internet Explorer"><Browser city={city} /></FloatingWindow>, div);
 }

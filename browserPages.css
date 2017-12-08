@@ -40,3 +40,16 @@
 .FriendsterProfile img {
 	width: 80px;
 }
+
+.roomster-pages-shared {
+	padding: 10px;
+	background-color: #fee;
+}
+.roomster-pages-shared header {
+	text-align: center;
+	font-size: small;
+	padding-left: 20px;
+	padding-right: 20px;
+	color: #f55;
+	font-weight: bold;
+}

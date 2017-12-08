@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import { WelcomePage, FriendsterPage, RoomsterPage } from './browserPages.jsx';
+import { WelcomePage, FriendsterPage, RoomsterPage, JobsterPage } from './browserPages.jsx';
 
 let bookmarks = [
 	{title: 'Home', nav: {component: WelcomePage}},
 	{title: 'Friendster', nav: {component: FriendsterPage}},
-	{title: 'Jobster', nav: {component: FriendsterPage}},
+	{title: 'Jobster', nav: {component: JobsterPage}},
 	{title: 'Roomster', nav: {component: RoomsterPage}}
 ]
 

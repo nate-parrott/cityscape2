@@ -1,6 +1,14 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 
+let formatEuros = (e) => {
+	return "€" + Math.round(e * 100) / 100;
+}
+
+let formatPercent = (frac) => {
+	return Math.round(frac * 100) + '%';
+}
+
 export let WelcomePage = ({simState, navigate}) => {
 	return (
 		<div className='WelcomePage'>
@@ -40,6 +48,7 @@ let FriendCell = ({id, agent, navigate}) => {
 let FriendsterProfile = ({agentId, navigate, simState}) => {
 	let agent = simState.agents.people[agentId];
 	let apartment = agent.homeId ? <ApartmentCell id={agent.homeId} simState={simState} navigate={navigate} /> : <EmptyState>No home</EmptyState>;
+	let job = agent.workplaceId ? <JobCell job={simState.map.buildings[agent.workplaceId][agent.jobId]} navigate={navigate} /> : <EmptyState>No job</EmptyState>; 
 	return (
 		<div className='FriendsterProfile friendster-pages-shared'>
 			<img src='/webAssets/blankProfile.jpg' />
@@ -47,6 +56,8 @@ let FriendsterProfile = ({agentId, navigate, simState}) => {
 			<p>{agent.ageYears} years old</p>
 			<h3>Residence:</h3>
 			{apartment}
+			<h3>Job:</h3>
+			{job}
 		</div>
 	)
 }
@@ -71,18 +82,85 @@ let ApartmentCell = ({id, navigate, simState}) => {
 		<div className='ApartmentCell'>
 			<h3>{building.name}</h3>
 			<div className='details'>
-				<ApartmentDetail name="Rent: " value={building.rent} />
-				<ApartmentDetail name="Occupants: " value={building.occupants.length} />
-				<ApartmentDetail name="Vacancies: " value={building.occupancy - building.occupants.length} />
+				<Detail name="Rent:" value={formatEuros(building.rent) + "/day"} />
+				<Detail name="Occupants:" value={building.occupants.length} />
+				<Detail name="Vacancies:" value={building.occupancy - building.occupants.length} />
 			</div>
 		</div>
 	)
 }
 
-let ApartmentDetail = ({name, value}) => {
-	return <div className='ApartmentDetail'><span className='name'>{name}</span><span className='value'>{value}</span></div>;
+let Detail = ({name, value}) => {
+	return <div className='Detail'><span className='name'>{name + ': '}</span><span className='value'>{value}</span></div>;
 }
 
 let EmptyState = ({children}) => {
 	return <p className='EmptyState'>{children}</p>;
+}
+
+export let JobsterPage = ({navigate, simState}) => {
+	let buildingsById = simState.map.buildings;
+	let buildingIds = Object.keys(buildingsById).filter((id) => buildingsById[id].typeId === 'work');
+	return (
+		<div className='JobsterPage jobster-pages-shared'>
+			<header>
+				<img src='/webAssets/JobsterLogo.png' />
+			</header>
+			<div>{ buildingIds.map((id) => <BusinessCell key={id} id={id} navigate={navigate} simState={simState} />) }</div>
+		</div>
+	)
+}
+
+let BusinessCell = ({navigate, simState, id}) => {
+	let building = simState.map.buildings[id];
+	let jobs = Object.values(building.jobs);
+	let filledJobs = jobs.filter((job) => !!job.personId);
+	let unfilledJobs = jobs.filter((job) => !job.personId);
+	return (
+		<div className='BusinessCell'>
+			<h3><Link navigate={navigate} to={{component: JobsterBusinessPage, id: id}}>{building.name}</Link></h3>
+			<div><Detail name='Employees' value={filledJobs.length} /> <Detail name='Unfilled positions' value={unfilledJobs.length} /> </div>
+		</div>
+	)
+}
+
+let JobsterBusinessPage = ({navigate, simState, id}) => {
+	let building = simState.map.buildings[id];
+	let jobs = building.jobs;
+	let filledJobIds = Object.keys(jobs).filter((id) => !!jobs[id].personId);
+	let unfilledJobIds = Object.keys(jobs).filter((id) => !jobs[id].personId);
+	return (
+		<div className='JobsterBusinessPage jobster-pages-shared'>
+			<BusinessCell navigate={navigate} simState={simState} id={id} />
+			<h5>Job Openings</h5>
+			{unfilledJobIds.map((id) => <JobCell job={jobs[id]} key={id} navigate={navigate} />)}
+			{filledJobIds.map((id) => <FilledJobCell job={jobs[id]} key={id} navigate={navigate} simState={simState} />)}
+		</div>
+	)
+};
+
+let FilledJobCell = ({job, navigate, simState}) => {
+	let personName = simState.agents.people[job.personId].name;
+	return (
+		<div className='FilledJobCell'>
+			<h5>Filled by <Link navigate={navigate} to={{component: FriendsterProfile, id: job.jobId}}>{name}</Link></h5>
+			<JobCell job={job} navigate={navigate} />
+		</div>
+	)
+}
+
+let JobCell = ({job, navigate}) => {
+	let skills = job.skills;
+	return (
+		<div className='JobCell'>
+			<div className='desc'>
+				<h3>{job.title}</h3>
+				<div className='skills'>
+					<h6>Required skills</h6>
+					{Object.keys(skills).map((skill) => <Detail key={skill} name={skill} value={formatPercent(skills[skill])} />)}
+				</div>
+			</div>
+			<div className='salary'>{formatEuros(job.salary)}/day</div>
+		</div>
+	)
 }

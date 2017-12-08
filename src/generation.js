@@ -1,6 +1,6 @@
 import Constants from './constants.js';
 let { minDailyWage, maxDailyWage, lifespanYears } = Constants;
-import { personName, apartmentName } from './generateNames.js';
+import { personName, apartmentName, businessName } from './generateNames.js';
 import { generateId } from './utils.js';
 
 let jobs = {
@@ -43,7 +43,7 @@ export let newWorkplace = () => {
   return {
     typeId: 'work',
     dimension: {x: 1, y: 1, z: 2},
-    name: 'K-Mart',
+    name: businessName(),
     jobs: {j1: generateJob('service_employee'), j2: generateJob('service_employee'), j3: generateJob('service_employee'), j4: generateJob('service_manager')},
     coordinate: null,
     edgeId: null

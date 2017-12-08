@@ -57,16 +57,61 @@
 	padding: 0;
 	list-style-type: none;
 }
-.ApartmentDetail {
+.Detail {
 	display: inline-block;
 	margin-right: 10px;
 }
 
-.ApartmentCell .details .value {
+.Detail .value {
 	font-weight: bold;
 }
 
 .EmptyState {
 	font-style: italic;
+	opacity: 0.5;
+}
+
+.JobsterPage header img {
+	width: 60%;
+	display: block;
+	margin: auto;
+}
+
+.jobster-pages-shared {
+	margin: 20px;
+}
+
+.jobster-pages-shared .WebLink {
+	color: #F77050;
+}
+
+.JobCell {
+	display: flex;
+	flex-direction: row;
+}
+
+.JobCell .desc {
+	flex-grow: 1;
+}
+
+.JobCell .salary {
+	font-size: large;
+	align-items: center;
+	justify-content: center;
+}
+
+.JobCell h3 {
+	margin-top: 0;
+	margin-bottom: 8px;
+}
+
+.JobCell {
+	margin-bottom: 1em;
+}
+
+.JobCell h6 {
+	margin-top: 8px;
+	margin-bottom: 8px;
+	text-transform: uppercase;
 	opacity: 0.5;
 }

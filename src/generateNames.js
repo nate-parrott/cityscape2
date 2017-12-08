@@ -26,3 +26,7 @@ export let personName = () => {
 export let apartmentName = () => {
 	return ((Math.random() * 1200) | 0) + ' ' + pick1(streetNames);
 }
+
+export let businessName = () => {
+	return 'K-Mart';
+}

@@ -11,9 +11,11 @@ let formatPercent = (frac) => {
 }
 
 export let WelcomePage = ({simState, navigate}) => {
+	if (!simState) return null;
 	return (
 		<div className='WelcomePage'>
 			<h1>Welcome to the World Wide Teletype System!</h1>
+			<p>The current time is: <strong>{formatTickAsTime(simState.simulation.tick)}</strong></p>
 			<p>Use this space-age tool to find anything you want! Find a job, find an apartment, find truth, even find love!</p>
 			<p>Your kingdom awaits!</p>
 		</div>
@@ -60,7 +62,7 @@ let FriendsterProfile = ({agentId, navigate, simState}) => {
 			<h3>Job:</h3>
 			{job}
 			<h3>Recent updates:</h3>
-			<div className='tweets'>{getTweets(agentId).map((tweet, i) => <TweetCell tweet={tweet} />)}</div>
+			<div className='tweets'>{getTweets(agentId).map((tweet, i) => <TweetCell key={i} tweet={tweet} />)}</div>
 		</div>
 	)
 }

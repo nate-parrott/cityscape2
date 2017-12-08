@@ -38,6 +38,6 @@ export let formatTickAsTime = (tick) => {
 	return hour + ":" + minute + " on day " + (day + 1) + ", year " + (year + startingYear);
 }
 
-tweet('p000', 0, "hello, world");
-tweet('p000', 5 * 16 + 3, "hello, world from 16:36");
-tweet('p000', 5 * 24 * 2 * 6.5, "next tweet from 2006");
+// tweet('p000', 0, "hello, world");
+// tweet('p000', 5 * 16 + 3, "hello, world from 16:36");
+// tweet('p000', 5 * 24 * 2 * 6.5, "next tweet from 2006");

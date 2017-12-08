@@ -1,4 +1,6 @@
 import Network from './network.js';
+import { tweet } from './twitter.js';
+import Constants from './constants.js';
 
 // COMMON DATA TYPES:
 function EdgePosition(edgeId, distance) {
@@ -25,22 +27,23 @@ class City { // cities should be used for ONE tick only, and then discarded
     this.network = new Network(this.map.network);
   }
   tick(time) {
-    // each tick gives a time budget of 1 unit
+		time *= Constants.simSpeedup;
     this.tickAgents(time);
-    this.simulation.tick++;
+    this.simulation.tick += time;
     return this.json;
   }
   tickAgents(time) {
     // tick people:
     for (let id of Object.keys(this.agents.people)) {
-      (new Person(this.agents.people[id], this)).tick(time);
+      (new Person(id, this)).tick(time);
     }
   }
 }
 
 class Person { // person objects should modify their internal json
-  constructor(json, city) {
-    this.json = json;
+  constructor(id, city) {
+		this.id = id;
+    this.json = city.agents.people[id];
     this.city = city;
   }
   tick(time) {
@@ -52,8 +55,8 @@ class Person { // person objects should modify their internal json
       let {remainingBudget, isFinished} = this.doAction(action, budget);
       budget = remainingBudget;
       if (isFinished) {
-        console.log("Completed action: ", action);
         this.json.actions = this.json.actions.slice(1);
+				this.tweet("Completed action: " + action.actionId);
       }
     }
   }
@@ -71,6 +74,9 @@ class Person { // person objects should modify their internal json
       return {remainingBudget: budget, finished: false};
     }
   }
+	tweet(text) {
+		tweet(this.id, this.city.simulation.tick, text);
+	}
 }
 
 export let tick = function(city, time) {

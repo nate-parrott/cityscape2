@@ -53,3 +53,20 @@
 	color: #f55;
 	font-weight: bold;
 }
+.RoomsterPage ul {
+	padding: 0;
+	list-style-type: none;
+}
+.ApartmentDetail {
+	display: inline-block;
+	margin-right: 10px;
+}
+
+.ApartmentCell .details .value {
+	font-weight: bold;
+}
+
+.EmptyState {
+	font-style: italic;
+	opacity: 0.5;
+}

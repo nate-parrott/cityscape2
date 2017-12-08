@@ -3,7 +3,7 @@ let percent = 0.01;
 // generastion parameters are stored in generation.js
 let Constants = {
   // time:
-  realSecondsPerSimulatedHour: 5,
+  realSecondsPerSimulatedHour: 5, // each 'tick' is 1 second
   hoursPerDay: 24,
   daysPerYear: 2,
   morningHours: [6, 12],

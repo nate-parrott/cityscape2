@@ -115,3 +115,12 @@
 	text-transform: uppercase;
 	opacity: 0.5;
 }
+
+.TweetCell p {
+	margin-bottom: 0;;
+}
+
+.TweetCell .time {
+	font-size: small;
+	opacity: 0.5;
+}

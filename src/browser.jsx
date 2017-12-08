@@ -109,3 +109,4 @@ export let showBrowserWindow = (city) => {
 	}
 	ReactDOM.render(<FloatingWindow onClose={onClose} title="Internet Explorer"><Browser city={city} /></FloatingWindow>, div);
 }
+

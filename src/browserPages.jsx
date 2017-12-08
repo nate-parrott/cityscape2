@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
+import { getTweets, formatTickAsTime } from './twitter.js';
 
 let formatEuros = (e) => {
 	return "€" + Math.round(e * 100) / 100;
@@ -58,8 +59,15 @@ let FriendsterProfile = ({agentId, navigate, simState}) => {
 			{apartment}
 			<h3>Job:</h3>
 			{job}
+			<h3>Recent updates:</h3>
+			<div className='tweets'>{getTweets(agentId).map((tweet, i) => <TweetCell tweet={tweet} />)}</div>
 		</div>
 	)
+}
+
+let TweetCell = ({tweet}) => {
+	let {text, tick} = tweet;
+	return <div className='TweetCell'><p>{text}</p><p className='time'>{formatTickAsTime(tick)}</p></div>;
 }
 
 export let RoomsterPage = ({navigate, simState}) => {

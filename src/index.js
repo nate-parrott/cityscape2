@@ -24,7 +24,7 @@ const BasicShader = require('three-line-2d/shaders/basic')(THREE);
 
 const backgroundColor = 0xffffff;
 const groundColor = 0xffffff;
-const networkColor = 0x6F7A90;
+const networkColor = 0xE5E5E5;
 const residentialColor = 0xB3D28A;
 const commercialColor = 0xADD1FC;
 const personColor = 0xB5A8BA;

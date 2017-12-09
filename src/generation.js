@@ -56,7 +56,7 @@ export let newAgent = (ageFraction) => {
     workplaceId: null,
     jobId: null,
     homeId: null,
-    ageYears: age,
+    birthTick: 0,
     wealth: 5,
 		name: personName(),
     position: {

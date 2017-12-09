@@ -661,6 +661,7 @@ export let defaultCity = {
     }
   },
   "simulation": {
-    "tick": 0
+    "tick": 0,
+		"prevTick": -1
   }
 }

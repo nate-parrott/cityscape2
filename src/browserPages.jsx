@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import { getTweets, formatTickAsTime } from './twitter.js';
+import Constants, { ticksPerYear } from './constants.js';
 
 let formatEuros = (e) => {
 	return "€" + Math.round(e * 100) / 100;
@@ -36,13 +37,17 @@ export let FriendsterPage = ({simState, navigate}) => {
 	)
 }
 
+let agentAgeYears = (id, simState) => {
+	let agent = simState.agents.people[id];
+	return (simState.simulation.tick - agent.birthTick) / ticksPerYear;
+}
+
 let FriendCell = ({id, agent, navigate}) => {
 	return (
 		<div className='FriendCell'>
 			<div><img src='/webAssets/blankProfile.jpg' /></div>
 			<div>
 				<Link navigate={navigate} to={{component: FriendsterProfile, agentId: id}}>{agent.name}</Link>
-				<p>{agent.ageYears} years old</p>
 			</div>
 		</div> 
 	)
@@ -56,7 +61,7 @@ let FriendsterProfile = ({agentId, navigate, simState}) => {
 		<div className='FriendsterProfile friendster-pages-shared'>
 			<img src='/webAssets/blankProfile.jpg' />
 			<h1>{agent.name}</h1>
-			<p>{agent.ageYears} years old</p>
+			<p>{agentAgeYears(agentId, simState) | 0} years old</p>
 			<h3>Residence:</h3>
 			{apartment}
 			<h3>Job:</h3>

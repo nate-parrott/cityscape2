@@ -1,6 +1,6 @@
 import Network from './network.js';
 import { tweet } from './twitter.js';
-import Constants from './constants.js';
+import Constants, { ticksPerYear } from './constants.js';
 
 // COMMON DATA TYPES:
 function EdgePosition(edgeId, distance) {
@@ -29,6 +29,7 @@ class City { // cities should be used for ONE tick only, and then discarded
   tick(time) {
 		time *= Constants.simSpeedup;
     this.tickAgents(time);
+		this.simulation.prevTick = this.simulation.tick;
     this.simulation.tick += time;
     return this.json;
   }
@@ -47,6 +48,7 @@ class Person { // person objects should modify their internal json
     this.city = city;
   }
   tick(time) {
+		this.tickLifeChoices();
     let budget = time;
     let tries = 0;
     while (budget > 0 && this.json.actions.length > 0 && tries < 10) {
@@ -60,6 +62,13 @@ class Person { // person objects should modify their internal json
       }
     }
   }
+	tickLifeChoices() {
+		let prevAgeYears = Math.floor((this.city.simulation.prevTick - this.json.birthTick) / ticksPerYear)
+		let newAgeYears = Math.floor((this.city.simulation.tick - this.json.birthTick) / ticksPerYear);
+		if (newAgeYears > prevAgeYears && newAgeYears % 5 === 0) {
+			this.tweet("Time to find a job!");
+		}
+	}
   doAction(action, budget, personJson) {
     // returns {remainingBudget, isFinished}
     if (action.actionId === 'travel') {

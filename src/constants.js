@@ -40,3 +40,4 @@ let Constants = {
   maxHousingCostAsFractionOfIncome: 0.5
 }
 export default Constants;
+export let ticksPerYear = Constants.realSecondsPerSimulatedHour * Constants.hoursPerDay * Constants.daysPerYear;

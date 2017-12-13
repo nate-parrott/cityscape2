@@ -150,4 +150,6 @@ let closestPointToLineSegment = (v, w, p) => {
   return addCoords(v, coordTimesScalar(subCoords(w, v), t));
 }
 
-module.exports = {astar, dist, lerp, moveInDirection, distanceRatio, closestPointToLineSegment};
+let pick1 = (list) => list[(Math.random() * list.length) | 0];
+
+module.exports = {astar, dist, lerp, moveInDirection, distanceRatio, closestPointToLineSegment, pick1};

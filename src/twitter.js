@@ -13,7 +13,7 @@ export let tweet = (personId, tick, text, importance) => {
 	importance = importance || TWEET_IMPORTANCE.normal;
 	if (!window.twitter[personId]) window.twitter[personId] = [];
 	window.twitter[personId].splice(0, 0, {tick, text, importance});
-	if (window.twitter[personId].length >= TWEET_LIMIT) window.twitter[personId] = window.twitter.slice(0, TWEET_LIMIT);
+	if (window.twitter[personId].length >= TWEET_LIMIT) window.twitter[personId] = window.twitter[personId].slice(0, TWEET_LIMIT);
 }
 
 export let tweetImportant = (personId, tick, text) => {

@@ -1,6 +1,7 @@
 import Network from './network.js';
 import { tweet } from './twitter.js';
 import Constants, { ticksPerYear } from './constants.js';
+import { pick1 } from './utils.js';
 
 // COMMON DATA TYPES:
 function EdgePosition(edgeId, distance) {
@@ -55,6 +56,9 @@ class City { // cities should be used for ONE tick only, and then discarded
 				callback(workplaceId, workplace, jobId, job);
 			}
 		});
+	}
+	iterateHomes(callback) {
+		this.iterateBuildingsWithType('home', callback);
 	}
 }
 
@@ -142,8 +146,48 @@ class Person { // person objects should modify their internal json
 		}
 		return true;
 	}
-	findHome() {
+	income() {
+		if (this.json.jobId) {
+			return this.city.map.buildings[this.json.workplaceId].jobs[this.json.jobId].salary;
+		} else {
+			return 0;
+		}
+	}
+ 	findHome() {
+		// leave the current home:
+		if (this.json.homeId) {
+			let occupantsList = this.city.map.buildings[this.json.homeId].occupants;
+			occupantsList.splice(occupantsList.indexOf(this.id), 1);
+			this.json.homeId = null;
+		}
 		
+		this.tweet("Time to find a home!");
+		let allHomes = [];
+		this.city.iterateHomes((homeId, home) => {
+			if (home.occupants.length < home.occupancy) {
+				allHomes.push({homeId, home});
+			}
+		});
+		allHomes.sort((a, b) => a.rent - b.rent);
+		let income = this.income();
+		let affordableHomes = allHomes.filter(({home}) => (home.rent <= income * 0.5));
+		
+		let newHome = null;
+		if (affordableHomes.length) {
+			newHome = pick1(affordableHomes);
+		} else if (allHomes.length) {
+			this.tweet("Can't find a home I can afford! Not sure how I'm gonna pay rent...");
+			newHome = allHomes[0];
+		}
+		if (newHome) {
+			let {home, homeId} = newHome;
+			home.occupants.push(this.id);
+			this.json.homeId = homeId;
+			this.tweet("Excited to be moving to " + home.name + "! but how am i supposed to pack my whole life into a box!!?!?");
+			if (Math.random() < 0.5) this.tweet("i hate moving :(");
+		} else {
+			this.tweet("Couldn't find a home... ugh...");
+		}
 	}
 }
 

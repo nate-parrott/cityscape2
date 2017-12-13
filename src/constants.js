@@ -12,13 +12,13 @@ let Constants = {
   walkingSpeedUnitsPerHour: 10,
   // people:
   lifespanYears: 80,
-  schoolUntilAge: 20,
-  workUntilAge: 65,
+  schoolUntilAge: 20, // unimplemented
+  workUntilAge: 65, // unimplemented
   // needs:
   restReplenishmentPerHourSleeping: 12.5 * percent,
   restDepletionPerHour: 6 * percent,
   funDepletionPerHour: 2 * percent,
-  basicProductsDepletionPerHour: 3 * percent,
+  basicProductsDepletionPerHour: 3 * percent, // unimplemented
   // durations:
   workDuration: 8,
   sleepMaxDuration: 8,
@@ -35,9 +35,14 @@ let Constants = {
   // housing:
   minDailyRent: 0.6,
   maxDailyRent: 5,
-  rentHikeForFilledApartments: 0.2,
-  rentDropForEmptyApartments: 0.2,
-  maxHousingCostAsFractionOfIncome: 0.5
+  rentHikeForFilledApartments: 0.2, // unimplemented right now
+  rentDropForEmptyApartments: 0.2, // unimplemented right now
+  maxHousingCostAsFractionOfIncome: 0.5,
+	// decision making: 
+	restThresholdToSleepOnStreet: 0.1,
+	restThresholdToSleepAtHome: 0.3,
+	wakeupHour: 8,
+	maxSleepTime: 8,
 }
 export default Constants;
 export let ticksPerYear = Constants.realSecondsPerSimulatedHour * Constants.hoursPerDay * Constants.daysPerYear;

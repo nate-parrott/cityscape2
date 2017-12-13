@@ -1,7 +1,8 @@
 import Constants, { ticksPerYear } from './constants.js';
-let {realSecondsPerSimulatedHour, restDepletionPerHour, funDepletionPerHour} = Constants;
+let {realSecondsPerSimulatedHour, restDepletionPerHour, funDepletionPerHour, restThresholdToSleepOnStreet, restThresholdToSleepAtHome, maxHousingCostAsFractionOfIncome, maxSleepTime, wakeupTime, hoursPerDay} = Constants;
 import { tweet } from './twitter.js';
 import { pick1 } from './utils.js';
+import { timeFromTick } from './time.js';
 
 export default class Person { // person objects should modify their internal json
   constructor(id, city) {
@@ -30,18 +31,36 @@ export default class Person { // person objects should modify their internal jso
   }
 	getNextAction() {
 		if (this.json.actions.length === 0) {
-			let next = this.decideNextAction();
-			if (next) {
-				this.json.actions.push(next);
-			}
+			this.json.actions = this.decideNextActions();
 		}
 		if (this.json.actions) {
 			return this.json.actions[0];
 		}
 		return null;
 	}
-	decideNextAction() {
-		return null;
+	decideNextActions() {
+		// it's the big deal!
+		if (this.city.isMorning() && this.json.workplaceId) {
+			// go to work:
+			return [{actionId: 'travel', buildingId: this.json.workplaceId}, {actionId: 'work', hoursRemaining: 8}];
+		} else if (this.json.satisfaction.rest < restThresholdToSleepAtHome && this.json.homeId) {
+			// go home and sleep
+			if (this.json.currentBuildingId === this.json.homeId) {
+				return [{actionId: 'sleep', atHome: true, hoursRemaining: 8, wakeupHour}];
+			} else {
+				return [{actionId: 'travel', buildingId: this.json.homeId}];
+			}
+			return [{actionId}]
+		} else if (this.json.satisfaction.rest < restThresholdToSleepOnStreet) {
+			// sleep right here
+			return [{actionId: 'sleep', atHome: false, hoursRemaining: 8, wakeupHour}];
+		} else if (this.json.homeId && this.json.currentBuildingId !== this.json.homeId) {
+			// go home
+			return [{actionId: 'travel', buildingId: this.json.homeId}];
+		} else {
+			// do nothing:
+			return [];
+		}
 	}
 	decaySatisfaction(time) {
 		let sat = this.json.satisfaction;
@@ -60,15 +79,18 @@ export default class Person { // person objects should modify their internal jso
   doAction(action, budget, personJson) {
     // returns {remainingBudget, isFinished}
     if (action.actionId === 'travel') {
+			this.json.currentBuildingId = null;
       // moveToward(startEdgeId, startCoord, destEdgeId, destCoord, budget)
       let dest = this.city.map.buildings[action.buildingId];
       let fromCoord = this.city.network.coord(this.json.position.edgeId, this.json.position.distance);
       let {newPosition, remainingBudget, atDestination} = this.city.network.moveToward(this.json.position.edgeId, fromCoord, dest.edgeId, dest.coordinate, budget);
       this.json.position = newPosition;
+			if (atDestination) {
+				this.json.currentBuildingId = action.buildingId;
+			}
       return {remainingBudget, isFinished: atDestination};
     } else {
-      console.warn('Unknown action type: ' + action.actionId);
-      return {remainingBudget: budget, finished: false};
+			throw `Unknown action type: ${action.actionId}`;
     }
   }
 	tweet(text) {
@@ -105,22 +127,6 @@ export default class Person { // person objects should modify their internal jso
 			this.tweet("I could not find a job!");
 		}
 	}
-	qualifiedForJob(job) {
-		let mySkills = this.json.skills;
-		for (let skill of Object.keys(job.skills)) {
-			if (mySkills[skill] < job.skills[skill]) {
-				return false;
-			}
-		}
-		return true;
-	}
-	income() {
-		if (this.json.jobId) {
-			return this.city.map.buildings[this.json.workplaceId].jobs[this.json.jobId].salary;
-		} else {
-			return 0;
-		}
-	}
  	findHome() {
 		// leave the current home:
 		if (this.json.homeId) {
@@ -138,7 +144,7 @@ export default class Person { // person objects should modify their internal jso
 		});
 		allHomes.sort((a, b) => a.rent - b.rent);
 		let income = this.income();
-		let affordableHomes = allHomes.filter(({home}) => (home.rent <= income * 0.5));
+		let affordableHomes = allHomes.filter(({home}) => (home.rent <= income * maxHousingCostAsFractionOfIncome));
 		
 		let newHome = null;
 		if (affordableHomes.length) {
@@ -155,6 +161,23 @@ export default class Person { // person objects should modify their internal jso
 			if (Math.random() < 0.5) this.tweet("i hate moving :(");
 		} else {
 			this.tweet("Couldn't find a home... ugh...");
+		}
+	}
+	// SANTA'S LITTLE HELPER FUNCTIONS 🎅
+	qualifiedForJob(job) {
+		let mySkills = this.json.skills;
+		for (let skill of Object.keys(job.skills)) {
+			if (mySkills[skill] < job.skills[skill]) {
+				return false;
+			}
+		}
+		return true;
+	}
+	income() {
+		if (this.json.jobId) {
+			return this.city.map.buildings[this.json.workplaceId].jobs[this.json.jobId].salary;
+		} else {
+			return 0;
 		}
 	}
 }

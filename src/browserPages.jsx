@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import { getTweets, formatTickAsTime } from './twitter.js';
+import { getTweets } from './twitter.js';
+import { formatTickAsTime } from './time.js';
 import Constants, { ticksPerYear } from './constants.js';
 
 let formatEuros = (e) => {
@@ -115,7 +116,8 @@ let BasicInfo = ({navigate, agentId, simState}) => {
 }
 
 let SatisfactionRow = ({agent}) => {
-	return <p className='SatisfactionRow'>🛌 {formatPercent(agent.satisfaction.rest)} 🎉 {formatPercent(agent.satisfaction.fun)}</p>;
+	let currentActionName = agent.actions.length ? agent.actions[0].actionId : 'doing nothing';
+	return <p className='SatisfactionRow'>🛌 {formatPercent(agent.satisfaction.rest)} 🎉 {formatPercent(agent.satisfaction.fun)} 👉 {currentActionName}</p>;
 }
 
 let TweetCell = ({tweet}) => {
@@ -204,7 +206,7 @@ let FilledJobCell = ({job, navigate, simState}) => {
 	let personName = simState.agents.people[job.personId].name;
 	return (
 		<div className='FilledJobCell'>
-			<h5>Filled by <Link navigate={navigate} to={{component: FriendsterProfile, id: job.jobId}}>{name}</Link></h5>
+			<h5>Filled by <Link navigate={navigate} to={{component: FriendsterProfile, id: job.personId}}>{personName}</Link></h5>
 			<JobCell job={job} navigate={navigate} />
 		</div>
 	)

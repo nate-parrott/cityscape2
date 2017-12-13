@@ -39,6 +39,7 @@
 }
 .FriendsterProfile img {
 	width: 80px;
+	float: right;
 }
 
 .roomster-pages-shared {
@@ -123,4 +124,9 @@
 .TweetCell .time {
 	font-size: small;
 	opacity: 0.5;
+}
+
+.BasicInfo {
+	font-size: small;
+	color: gray;
 }

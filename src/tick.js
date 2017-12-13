@@ -1,9 +1,10 @@
 import Network from './network.js';
 import { tweet } from './twitter.js';
 import Constants, { ticksPerYear } from './constants.js';
-let {realSecondsPerSimulatedHour, restDepletionPerHour, funDepletionPerHour} = Constants;
+let {realSecondsPerSimulatedHour, restDepletionPerHour, funDepletionPerHour, morningHours } = Constants;
 import { pick1 } from './utils.js';
 import Person from './person.js';
+import { tickToTime } from './time.js';
 
 // COMMON DATA TYPES:
 function EdgePosition(edgeId, distance) {
@@ -39,6 +40,7 @@ class City { // cities should be used for ONE tick only, and then discarded
       (new Person(id, this)).tick(time);
     }
   }
+	// HELPERS:
 	iterateBuildingsWithType(typeId, callback) {
 		for (let id of Object.keys(this.map.buildings)) {
 			let building = this.map.buildings[id];
@@ -57,6 +59,10 @@ class City { // cities should be used for ONE tick only, and then discarded
 	}
 	iterateHomes(callback) {
 		this.iterateBuildingsWithType('home', callback);
+	}
+	isMorning() {
+		let {hour} = tickToTime(this.simulation.tick);
+		return hour >= morningHours[0] && hour < morningHours[1];
 	}
 }
 

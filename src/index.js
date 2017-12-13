@@ -352,10 +352,12 @@ const drawState = (state) => {
 
 // Simulation Code
 
-setInterval(() => {
-    city.simState = tick(city.simState, timePerTick);
-    drawState(city.simState);
-}, tickFrequency)
+function tickLoop() {
+  city.simState = tick(city.simState, timePerTick);
+  drawState(city.simState);
+	setTimeout(tickLoop, tickFrequency);
+}
+tickLoop();
 
 const animate = () => {
     requestAnimationFrame( animate );

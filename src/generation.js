@@ -11,6 +11,8 @@ let jobs = {
   engineer: {title: 'Engineer', skills: {people: [0.1, 0.6], stem: [0.6, 1.0], language: [0.2, 0.5], arts: [0, 0.2]}}
 }
 
+let allSkills = ['people', 'physical', 'language', 'arts', 'stem'];
+
 let randomizeSkills = (skills) => {
   let vals = {};
   for (let key of Object.keys(skills)) {
@@ -50,6 +52,14 @@ export let newWorkplace = () => {
   }
 }
 
+let generateSkillSet = () => {
+	// people tend towards high skill values to account for the fact that most people should be
+	// employable, most of the time -- filling a role requires all requirements to be met
+	let skills = {};
+	for (let skill of allSkills) skills[skill] = 1 - Math.random() * Math.random();
+	return skills;
+}
+
 export let newAgent = (ageFraction) => {
   let age = (ageFraction * lifespanYears) | 0;
   return {
@@ -63,6 +73,7 @@ export let newAgent = (ageFraction) => {
       edgeId: "e000",
       distance: 0.3
     },
+		skills: generateSkillSet(),
     actions: []
   }
 }

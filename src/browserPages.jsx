@@ -56,16 +56,29 @@ let FriendCell = ({id, agent, navigate}) => {
 let FriendsterProfile = ({agentId, navigate, simState}) => {
 	let agent = simState.agents.people[agentId];
 	let apartment = agent.homeId ? <ApartmentCell id={agent.homeId} simState={simState} navigate={navigate} /> : <EmptyState>No home</EmptyState>;
-	let job = agent.workplaceId ? <JobCell job={simState.map.buildings[agent.workplaceId][agent.jobId]} navigate={navigate} /> : <EmptyState>No job</EmptyState>; 
+	
+	let job;
+	if (agent.workplaceId) {
+		let workplace = simState.map.buildings[agent.workplaceId];
+		job = <JobCell job={workplace.jobs[agent.jobId]} navigate={navigate} workplaceId={agent.workplaceId} workplace={workplace} />;
+	} else {
+		job = <EmptyState>No job</EmptyState>;
+	}
+	let skills = agent.skills;
 	return (
 		<div className='FriendsterProfile friendster-pages-shared'>
 			<img src='/webAssets/blankProfile.jpg' />
 			<h1>{agent.name}</h1>
 			<p>{agentAgeYears(agentId, simState) | 0} years old</p>
+		
 			<h3>Residence:</h3>
 			{apartment}
 			<h3>Job:</h3>
 			{job}
+			<div className='skills'>
+				<h3>Skills</h3>
+				{Object.keys(skills).map((skill) => <Detail key={skill} name={skill} value={formatPercent(skills[skill])} />)}
+			</div>
 			<h3>Recent updates:</h3>
 			<div className='tweets'>{getTweets(agentId).map((tweet, i) => <TweetCell key={i} tweet={tweet} />)}</div>
 		</div>
@@ -164,12 +177,13 @@ let FilledJobCell = ({job, navigate, simState}) => {
 	)
 }
 
-let JobCell = ({job, navigate}) => {
+let JobCell = ({job, navigate, workplaceId, workplace}) => {
 	let skills = job.skills;
+	let workplaceLink = workplaceId ? ["at ", <Link navigate={navigate} to={{component: JobsterBusinessPage, id: workplaceId}}>{workplace.name}</Link>] : null;
 	return (
 		<div className='JobCell'>
 			<div className='desc'>
-				<h3>{job.title}</h3>
+				<h3>{job.title} {workplaceLink}</h3>
 				<div className='skills'>
 					<h6>Required skills</h6>
 					{Object.keys(skills).map((skill) => <Detail key={skill} name={skill} value={formatPercent(skills[skill])} />)}

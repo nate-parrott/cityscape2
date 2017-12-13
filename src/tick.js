@@ -25,6 +25,7 @@ class City { // cities should be used for ONE tick only, and then discarded
     this.agents = json.agents;
     this.simulation = json.simulation;
     this.network = new Network(this.map.network);
+		this.jobs = {};
   }
   tick(time) {
 		time *= Constants.simSpeedup;
@@ -39,6 +40,22 @@ class City { // cities should be used for ONE tick only, and then discarded
       (new Person(id, this)).tick(time);
     }
   }
+	iterateBuildingsWithType(typeId, callback) {
+		for (let id of Object.keys(this.map.buildings)) {
+			let building = this.map.buildings[id];
+			if (building.typeId === typeId) {
+				callback(id, building);
+			}
+		}
+	}
+	iterateJobs(callback) {
+		this.iterateBuildingsWithType('work', (workplaceId, workplace) => {
+			for (let jobId of Object.keys(workplace.jobs)) {
+				let job = workplace.jobs[jobId];
+				callback(workplaceId, workplace, jobId, job);
+			}
+		});
+	}
 }
 
 class Person { // person objects should modify their internal json
@@ -66,7 +83,8 @@ class Person { // person objects should modify their internal json
 		let prevAgeYears = Math.floor((this.city.simulation.prevTick - this.json.birthTick) / ticksPerYear)
 		let newAgeYears = Math.floor((this.city.simulation.tick - this.json.birthTick) / ticksPerYear);
 		if (newAgeYears > prevAgeYears && newAgeYears % 5 === 0) {
-			this.tweet("Time to find a job!");
+			this.findJob();
+			this.findHome();
 		}
 	}
   doAction(action, budget, personJson) {
@@ -85,6 +103,47 @@ class Person { // person objects should modify their internal json
   }
 	tweet(text) {
 		tweet(this.id, this.city.simulation.tick, text);
+	}
+	findJob() {
+		this.tweet("Looking for a new job...");
+		let qualifiedJobs = [];
+		this.city.iterateJobs((workplaceId, workplace, jobId, job) => {
+			if ((job.personId === null || job.personId === this.id) && this.qualifiedForJob(job)) {
+				qualifiedJobs.push({workplaceId, workplace, jobId, job});
+			}
+		});
+		qualifiedJobs.sort((a, b) => a.salary - b.salary);
+		if (qualifiedJobs.length > 0) {
+			let {workplaceId, workplace, jobId, job} = qualifiedJobs[qualifiedJobs.length - 1];
+			if (job.personId === this.id) {
+				this.tweet("Nvm, I'm remaining at my current job!");
+			} else {
+				this.tweet("Excited to say I've found a job as a " + job.title + " at " + workplace.name);
+				// leave old job:
+				if (this.json.workplaceId && this.json.jobId) {
+					let oldWorkplace = this.city.map.buildings[this.json.workplaceId];
+					let oldJob = oldWorkplace.jobs[this.json.jobId];
+					this.tweet("Sad to be leaving " + oldWorkplace.name + "! great working with yall.");
+					oldJob.personId = null;
+				}
+				this.json.workplaceId = workplaceId;
+				this.json.jobId = jobId;
+			}
+		} else {
+			this.tweet("I could not find a job!");
+		}
+	}
+	qualifiedForJob(job) {
+		let mySkills = this.json.skills;
+		for (let skill of Object.keys(job.skills)) {
+			if (mySkills[skill] < job.skills[skill]) {
+				return false;
+			}
+		}
+		return true;
+	}
+	findHome() {
+		
 	}
 }
 

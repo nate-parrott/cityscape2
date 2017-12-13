@@ -1,5 +1,5 @@
 import Constants, { ticksPerYear } from './constants.js';
-let {realSecondsPerSimulatedHour, restDepletionPerHour, funDepletionPerHour, restThresholdToSleepOnStreet, restThresholdToSleepAtHome, maxHousingCostAsFractionOfIncome, maxSleepTime, wakeupTime, hoursPerDay} = Constants;
+let {realSecondsPerSimulatedHour, restDepletionPerHour, funDepletionPerHour, restThresholdToSleepOnStreet, restThresholdToSleepAtHome, maxHousingCostAsFractionOfIncome, maxSleepTime, wakeupHour, hoursPerDay, walkingSpeedUnitsPerHour, sleepMaxDuration, workDuration} = Constants;
 import { tweet } from './twitter.js';
 import { pick1 } from './utils.js';
 import { timeFromTick } from './time.js';
@@ -29,6 +29,7 @@ export default class Person { // person objects should modify their internal jso
       }
     }
   }
+	// ACTIONS
 	getNextAction() {
 		if (this.json.actions.length === 0) {
 			this.json.actions = this.decideNextActions();
@@ -40,20 +41,21 @@ export default class Person { // person objects should modify their internal jso
 	}
 	decideNextActions() {
 		// it's the big deal!
-		if (this.city.isMorning() && this.json.workplaceId) {
+		let job = this.getJob();
+		if (this.city.isMorning() && job) {
 			// go to work:
-			return [{actionId: 'travel', buildingId: this.json.workplaceId}, {actionId: 'work', hoursRemaining: 8}];
+			return [{actionId: 'travel', buildingId: this.json.workplaceId}, {actionId: 'work', hoursRemaining: workDuration, job: job}];
 		} else if (this.json.satisfaction.rest < restThresholdToSleepAtHome && this.json.homeId) {
 			// go home and sleep
 			if (this.json.currentBuildingId === this.json.homeId) {
-				return [{actionId: 'sleep', atHome: true, hoursRemaining: 8, wakeupHour}];
+				return [{actionId: 'sleep', atHome: true, hoursRemaining: sleepMaxDuration, wakeupHour}];
 			} else {
 				return [{actionId: 'travel', buildingId: this.json.homeId}];
 			}
 			return [{actionId}]
 		} else if (this.json.satisfaction.rest < restThresholdToSleepOnStreet) {
 			// sleep right here
-			return [{actionId: 'sleep', atHome: false, hoursRemaining: 8, wakeupHour}];
+			return [{actionId: 'sleep', atHome: false, hoursRemaining: sleepMaxDuration, wakeupHour}];
 		} else if (this.json.homeId && this.json.currentBuildingId !== this.json.homeId) {
 			// go home
 			return [{actionId: 'travel', buildingId: this.json.homeId}];
@@ -62,12 +64,41 @@ export default class Person { // person objects should modify their internal jso
 			return [];
 		}
 	}
+  doAction(action, budget, personJson) {
+    // returns {remainingBudget, isFinished}
+    if (action.actionId === 'travel') {
+			this.json.currentBuildingId = null;
+      // moveToward(startEdgeId, startCoord, destEdgeId, destCoord, budget)
+			let kTimeToDistance = walkingSpeedUnitsPerHour / realSecondsPerSimulatedHour;
+			let walkingBudget = budget * kTimeToDistance;
+      let dest = this.city.map.buildings[action.buildingId];
+      let fromCoord = this.city.network.coord(this.json.position.edgeId, this.json.position.distance);
+      let {newPosition, remainingBudget, atDestination} = this.city.network.moveToward(this.json.position.edgeId, fromCoord, dest.edgeId, dest.coordinate, walkingBudget);
+			remainingBudget /= kTimeToDistance;
+      this.json.position = newPosition;
+			if (atDestination) {
+				this.json.currentBuildingId = action.buildingId;
+			}
+      return {remainingBudget, isFinished: atDestination};
+    } else if (action.actionId === 'work') {
+			let timeRemaining = action.hoursRemaining * realSecondsPerSimulatedHour;
+			let workTime = Math.min(budget, timeRemaining);
+			let workForHours = workTime / realSecondsPerSimulatedHour;
+			action.hoursRemaining -= workForHours;
+			this.json.wealth += workForHours * action.job.salary / workDuration;
+			return {remainingBudget: budget - workTime, isFinished: action.hoursRemaining <= 0};
+    } else {
+			throw `Unknown action type: ${action.actionId}`;
+    }
+  }
+	// STATS
 	decaySatisfaction(time) {
 		let sat = this.json.satisfaction;
 		let hours = time / realSecondsPerSimulatedHour;
 		sat.rest = Math.max(0, sat.rest - hours * restDepletionPerHour);
 		sat.fun = Math.max(0, sat.fun - hours * funDepletionPerHour);
 	}
+	// LIFE CHOICES
 	tickLifeChoices() {
 		let prevAgeYears = Math.floor((this.city.simulation.prevTick - this.json.birthTick) / ticksPerYear)
 		let newAgeYears = Math.floor((this.city.simulation.tick - this.json.birthTick) / ticksPerYear);
@@ -75,26 +106,6 @@ export default class Person { // person objects should modify their internal jso
 			this.findJob();
 			this.findHome();
 		}
-	}
-  doAction(action, budget, personJson) {
-    // returns {remainingBudget, isFinished}
-    if (action.actionId === 'travel') {
-			this.json.currentBuildingId = null;
-      // moveToward(startEdgeId, startCoord, destEdgeId, destCoord, budget)
-      let dest = this.city.map.buildings[action.buildingId];
-      let fromCoord = this.city.network.coord(this.json.position.edgeId, this.json.position.distance);
-      let {newPosition, remainingBudget, atDestination} = this.city.network.moveToward(this.json.position.edgeId, fromCoord, dest.edgeId, dest.coordinate, budget);
-      this.json.position = newPosition;
-			if (atDestination) {
-				this.json.currentBuildingId = action.buildingId;
-			}
-      return {remainingBudget, isFinished: atDestination};
-    } else {
-			throw `Unknown action type: ${action.actionId}`;
-    }
-  }
-	tweet(text) {
-		tweet(this.id, this.city.simulation.tick, text);
 	}
 	findJob() {
 		this.tweet("Looking for a new job...");
@@ -163,6 +174,10 @@ export default class Person { // person objects should modify their internal jso
 			this.tweet("Couldn't find a home... ugh...");
 		}
 	}
+	// FEEDBACK
+	tweet(text) {
+		tweet(this.id, this.city.simulation.tick, text);
+	}
 	// SANTA'S LITTLE HELPER FUNCTIONS 🎅
 	qualifiedForJob(job) {
 		let mySkills = this.json.skills;
@@ -174,10 +189,10 @@ export default class Person { // person objects should modify their internal jso
 		return true;
 	}
 	income() {
-		if (this.json.jobId) {
-			return this.city.map.buildings[this.json.workplaceId].jobs[this.json.jobId].salary;
-		} else {
-			return 0;
-		}
+		let job = this.getJob();
+		return job ? job.salary : 0;
+	}
+	getJob() {
+		return this.json.jobId ? this.city.map.buildings[this.json.workplaceId].jobs[this.json.jobId] : null;
 	}
 }

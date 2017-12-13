@@ -117,7 +117,7 @@ let BasicInfo = ({navigate, agentId, simState}) => {
 
 let SatisfactionRow = ({agent}) => {
 	let currentActionName = agent.actions.length ? agent.actions[0].actionId : 'doing nothing';
-	return <p className='SatisfactionRow'>🛌 {formatPercent(agent.satisfaction.rest)} 🎉 {formatPercent(agent.satisfaction.fun)} 👉 {currentActionName}</p>;
+	return <p className='SatisfactionRow'>🛌 {formatPercent(agent.satisfaction.rest)} 🎉 {formatPercent(agent.satisfaction.fun)} 👉 {currentActionName} 💵 {formatEuros(agent.wealth)}</p>;
 }
 
 let TweetCell = ({tweet}) => {

@@ -1,6 +1,7 @@
 import Network from './network.js';
 import { tweet } from './twitter.js';
 import Constants, { ticksPerYear } from './constants.js';
+let {realSecondsPerSimulatedHour, restDepletionPerHour, funDepletionPerHour} = Constants;
 import { pick1 } from './utils.js';
 
 // COMMON DATA TYPES:
@@ -69,12 +70,16 @@ class Person { // person objects should modify their internal json
     this.city = city;
   }
   tick(time) {
+		// time is measured in seconds (scaled by simulation time)
 		this.tickLifeChoices();
+		this.decaySatisfaction(time);
+		
     let budget = time;
     let tries = 0;
-    while (budget > 0 && this.json.actions.length > 0 && tries < 10) {
+    while (budget > 0 && tries < 10) {
       tries++;
-      let action = this.json.actions[0];
+      let action = this.getNextAction();
+			if (!action) break;
       let {remainingBudget, isFinished} = this.doAction(action, budget);
       budget = remainingBudget;
       if (isFinished) {
@@ -83,6 +88,27 @@ class Person { // person objects should modify their internal json
       }
     }
   }
+	getNextAction() {
+		if (this.json.actions.length === 0) {
+			let next = this.decideNextAction();
+			if (next) {
+				this.json.actions.push(next);
+			}
+		}
+		if (this.json.actions) {
+			return this.json.actions[0];
+		}
+		return null;
+	}
+	decideNextAction() {
+		return null;
+	}
+	decaySatisfaction(time) {
+		let sat = this.json.satisfaction;
+		let hours = time / realSecondsPerSimulatedHour;
+		sat.rest = Math.max(0, sat.rest - hours * restDepletionPerHour);
+		sat.fun = Math.max(0, sat.fun - hours * funDepletionPerHour);
+	}
 	tickLifeChoices() {
 		let prevAgeYears = Math.floor((this.city.simulation.prevTick - this.json.birthTick) / ticksPerYear)
 		let newAgeYears = Math.floor((this.city.simulation.tick - this.json.birthTick) / ticksPerYear);
@@ -130,6 +156,8 @@ class Person { // person objects should modify their internal json
 					this.tweet("Sad to be leaving " + oldWorkplace.name + "! great working with yall.");
 					oldJob.personId = null;
 				}
+				// join new job:
+				job.personId = this.id;
 				this.json.workplaceId = workplaceId;
 				this.json.jobId = jobId;
 			}

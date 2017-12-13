@@ -32,7 +32,7 @@ export let FriendsterPage = ({simState, navigate}) => {
 	return (
 		<div className='FriendsterPage friendster-pages-shared'>
 			<h5>ALL PUBLIC PROFILES</h5>
-			<ul>{Object.keys(ppl).map((id) => <FriendCell key={id} id={id} agent={ppl[id]} navigate={navigate} />)}</ul>
+			<ul>{Object.keys(ppl).map((id) => <FriendCell key={id} id={id} agent={ppl[id]} navigate={navigate} simState={simState} />)}</ul>
 		</div>
 	)
 }
@@ -42,12 +42,13 @@ let agentAgeYears = (id, simState) => {
 	return (simState.simulation.tick - agent.birthTick) / ticksPerYear;
 }
 
-let FriendCell = ({id, agent, navigate}) => {
+let FriendCell = ({id, agent, navigate, simState}) => {
 	return (
 		<div className='FriendCell'>
 			<div><img src='/webAssets/blankProfile.jpg' /></div>
 			<div>
 				<Link navigate={navigate} to={{component: FriendsterProfile, agentId: id}}>{agent.name}</Link>
+				<BasicInfo navigate={navigate} agentId={id} simState={simState} />
 			</div>
 		</div> 
 	)
@@ -70,6 +71,7 @@ let FriendsterProfile = ({agentId, navigate, simState}) => {
 			<img src='/webAssets/blankProfile.jpg' />
 			<h1>{agent.name}</h1>
 			<p>{agentAgeYears(agentId, simState) | 0} years old</p>
+			<SatisfactionRow agent={agent} />
 		
 			<h3>Residence:</h3>
 			{apartment}
@@ -83,6 +85,37 @@ let FriendsterProfile = ({agentId, navigate, simState}) => {
 			<div className='tweets'>{getTweets(agentId).map((tweet, i) => <TweetCell key={i} tweet={tweet} />)}</div>
 		</div>
 	)
+}
+
+let BasicInfo = ({navigate, agentId, simState}) => {
+	let agent = simState.agents.people[agentId];
+	let job;
+	if (agent.workplaceId) {
+		let workplace = simState.map.buildings[agent.workplaceId];
+		let jobTitle = workplace.jobs[agent.jobId].title;
+		job = <span>{jobTitle} at <Link navigate={navigate} to={{component: JobsterBusinessPage, id: agent.workplaceId}}>{workplace.name}</Link></span>;
+	} else {
+		job = "No job";
+	}
+	let home = null;
+	if (agent.homeId) {
+		let homeName = simState.map.buildings[agent.homeId].name;
+		home = <span>Lives at {homeName}</span>;
+	} else {
+		home = "No home";
+	}
+	
+	return (
+		<div className='BasicInfo'>
+			<SatisfactionRow agent={agent} />
+			<p>{job}</p>
+			<p>{home}</p>
+		</div>
+	)
+}
+
+let SatisfactionRow = ({agent}) => {
+	return <p className='SatisfactionRow'>🛌 {formatPercent(agent.satisfaction.rest)} 🎉 {formatPercent(agent.satisfaction.fun)}</p>;
 }
 
 let TweetCell = ({tweet}) => {
@@ -179,7 +212,7 @@ let FilledJobCell = ({job, navigate, simState}) => {
 
 let JobCell = ({job, navigate, workplaceId, workplace}) => {
 	let skills = job.skills;
-	let workplaceLink = workplaceId ? ["at ", <Link navigate={navigate} to={{component: JobsterBusinessPage, id: workplaceId}}>{workplace.name}</Link>] : null;
+	let workplaceLink = workplaceId ? ["at ", <Link key='link' navigate={navigate} to={{component: JobsterBusinessPage, id: workplaceId}}>{workplace.name}</Link>] : null;
 	return (
 		<div className='JobCell'>
 			<div className='desc'>

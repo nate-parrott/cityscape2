@@ -73,6 +73,7 @@ export let newAgent = (ageFraction) => {
       edgeId: "e000",
       distance: 0.3
     },
+		satisfaction: {rest: 1, fun: 0.5},
 		skills: generateSkillSet(),
     actions: []
   }

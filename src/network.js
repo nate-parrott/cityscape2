@@ -53,14 +53,16 @@ export default class Network {
     
     let coord = startCoord;
     let edgeId = startEdgeId;
-        
+    
     let atDest = () => edgeId === destEdgeId && dist(coord, destCoord) < 0.001;
     
     if (!routeEdges) {
       console.log("no route");
     }
     if (!routeEdges || atDest()) {
-      return {newPosition: pos, remainingBudget: budget, atDestination: atDest()};
+	    let edge = this.edges[edgeId];
+	    let distBetween = distanceRatio(this.nodes[edge.startId].coordinate, this.nodes[edge.endId].coordinate, coord);
+      return {newPosition: {edgeId, distance: distBetween}, remainingBudget: budget, atDestination: atDest()};
     }
     
     for (let i=0; i < routeEdges.length; i++) {

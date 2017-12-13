@@ -2,7 +2,7 @@ let percent = 0.01;
 
 // generastion parameters are stored in generation.js
 let Constants = {
-	simSpeedup: 10,
+	simSpeedup: 30,
   // time:
   realSecondsPerSimulatedHour: 5, // each 'tick' is 1 second
   hoursPerDay: 24,
@@ -16,7 +16,7 @@ let Constants = {
   workUntilAge: 65, // unimplemented
   // needs:
   restReplenishmentPerHourSleeping: 12.5 * percent,
-  restDepletionPerHour: 6 * percent,
+  restDepletionPerHour: 5 * percent,
   funDepletionPerHour: 2 * percent,
   basicProductsDepletionPerHour: 3 * percent, // unimplemented
   // durations:

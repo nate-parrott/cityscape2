@@ -1,5 +1,5 @@
 import Constants, { ticksPerYear } from './constants.js';
-let {realSecondsPerSimulatedHour, restDepletionPerHour, funDepletionPerHour, restThresholdToSleepOnStreet, restThresholdToSleepAtHome, maxHousingCostAsFractionOfIncome, maxSleepTime, wakeupHour, hoursPerDay, walkingSpeedUnitsPerHour, sleepMaxDuration, workDuration} = Constants;
+let {realSecondsPerSimulatedHour, restDepletionPerHour, restReplenishmentPerHourSleeping, funDepletionPerHour, restThresholdToSleepOnStreet, restThresholdToSleepAtHome, maxHousingCostAsFractionOfIncome, maxSleepTime, wakeupHour, hoursPerDay, walkingSpeedUnitsPerHour, sleepMaxDuration, workDuration} = Constants;
 import { tweet } from './twitter.js';
 import { pick1 } from './utils.js';
 import { timeFromTick } from './time.js';
@@ -44,9 +44,11 @@ export default class Person { // person objects should modify their internal jso
 		let job = this.getJob();
 		if (this.city.isMorning() && job) {
 			// go to work:
+			this.tweet("off 2 work!! 💪");
 			return [{actionId: 'travel', buildingId: this.json.workplaceId}, {actionId: 'work', hoursRemaining: workDuration, job: job}];
 		} else if (this.json.satisfaction.rest < restThresholdToSleepAtHome && this.json.homeId) {
 			// go home and sleep
+			this.tweet("gonna hit the hecking SACK once i get home innit 💤");
 			if (this.json.currentBuildingId === this.json.homeId) {
 				return [{actionId: 'sleep', atHome: true, hoursRemaining: sleepMaxDuration, wakeupHour}];
 			} else {
@@ -67,8 +69,8 @@ export default class Person { // person objects should modify their internal jso
   doAction(action, budget, personJson) {
     // returns {remainingBudget, isFinished}
     if (action.actionId === 'travel') {
+			// 🏃 🏃‍♀️ 🏃 🏃‍♀️ TRAVEL 🏃 🏃‍♀️ 🏃 🏃‍♀️
 			this.json.currentBuildingId = null;
-      // moveToward(startEdgeId, startCoord, destEdgeId, destCoord, budget)
 			let kTimeToDistance = walkingSpeedUnitsPerHour / realSecondsPerSimulatedHour;
 			let walkingBudget = budget * kTimeToDistance;
       let dest = this.city.map.buildings[action.buildingId];
@@ -81,12 +83,27 @@ export default class Person { // person objects should modify their internal jso
 			}
       return {remainingBudget, isFinished: atDestination};
     } else if (action.actionId === 'work') {
+			// 👩‍💻 👨‍🏭 💂 👨‍🌾 WORK 👩‍💻 👨‍🏭 💂 👨‍🌾
 			let timeRemaining = action.hoursRemaining * realSecondsPerSimulatedHour;
 			let workTime = Math.min(budget, timeRemaining);
 			let workForHours = workTime / realSecondsPerSimulatedHour;
 			action.hoursRemaining -= workForHours;
 			this.json.wealth += workForHours * action.job.salary / workDuration;
 			return {remainingBudget: budget - workTime, isFinished: action.hoursRemaining <= 0};
+    } else if (action.actionId === 'sleep') {
+			// 💤💤💤 SLEEP 💤💤💤
+    	// sleep for the entire tick, or wake up:
+			let {hour} = this.city.time();
+			if (action.hoursRemaining <= 0 || hour === action.wakeupHour) {
+				this.tweet("☕️ rise n shine!! haha");
+				return {remainingBudget: budget, isFinished: true}; // wake up
+			} else {
+				let hoursOfSleep = budget / realSecondsPerSimulatedHour;
+				action.hoursRemaining -= hoursOfSleep;
+				this.json.satisfaction.rest += hoursOfSleep * (restReplenishmentPerHourSleeping + restDepletionPerHour);
+				this.json.satisfaction.rest = Math.min(1, this.json.satisfaction.rest);
+				return {remainingBudget: 0, isFinished: false};
+			}
     } else {
 			throw `Unknown action type: ${action.actionId}`;
     }

@@ -60,8 +60,11 @@ class City { // cities should be used for ONE tick only, and then discarded
 	iterateHomes(callback) {
 		this.iterateBuildingsWithType('home', callback);
 	}
+	time() {
+		return tickToTime(this.simulation.tick);
+	}
 	isMorning() {
-		let {hour} = tickToTime(this.simulation.tick);
+		let {hour} = this.time();
 		return hour >= morningHours[0] && hour < morningHours[1];
 	}
 }

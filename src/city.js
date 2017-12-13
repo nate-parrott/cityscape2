@@ -652,12 +652,9 @@ export let defaultCity = {
   },
   "agents": {
     "people": {
-      "p000": {
-        ...newAgent(),
-        actions: [
-          {actionId: 'travel', buildingId: 'b000'}        
-        ]
-      }
+      "p000": newAgent(),
+			"p001": newAgent(),
+			"p002": newAgent()
     }
   },
   "simulation": {

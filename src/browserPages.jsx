@@ -206,7 +206,7 @@ let FilledJobCell = ({job, navigate, simState}) => {
 	let personName = simState.agents.people[job.personId].name;
 	return (
 		<div className='FilledJobCell'>
-			<h5>Filled by <Link navigate={navigate} to={{component: FriendsterProfile, id: job.personId}}>{personName}</Link></h5>
+			<h5>FILLED BY <Link navigate={navigate} to={{component: FriendsterProfile, agentId: job.personId}}>{personName}</Link>:</h5>
 			<JobCell job={job} navigate={navigate} />
 		</div>
 	)

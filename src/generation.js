@@ -32,7 +32,7 @@ export let newApartment = () => {
   return {
     typeId: 'home',
 		name: apartmentName(),
-    occupancy: 1,
+    occupancy: 10,
     occupants: [],
     rent: 1,
     dimension: {x: 1, y: 0.75, z: 1},

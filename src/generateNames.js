@@ -75,7 +75,8 @@ export let businessName = () => {
 			"Guns",
 			"Market",
 			"Books",
-			"Coffee"
+			"Coffee",
+			"Ham"
 		]
 	};
 	let suffix = () => {

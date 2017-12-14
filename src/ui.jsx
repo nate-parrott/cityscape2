@@ -1,0 +1,45 @@
+import React, { Component } from 'react';
+import ReactDOM from 'react-dom';
+
+class ActionBar extends Component {
+    constructor(props) {
+        super(props)
+        this.state = {
+            
+        }
+    }
+    
+    render() {
+        return (
+            <div className="ActionBarContainer">
+                <div className='ToolBar'>
+                    <ToolButton/>
+                    <ToolButton/>
+                    <ToolButton/>
+                    <ToolButton/>
+                    <ToolButton/>
+                    <ToolButton/>
+                </div>
+                <div className='ToolPalette'>
+                </div>
+            </div>
+        );
+    }
+}
+
+function ToolButton(props) {
+    
+    
+    return (
+        <div className="ToolButton">
+        </div>
+    )
+}
+
+export let showUI = (city) => {
+	let div = document.createElement("div");
+	div.id = "bottomContent";
+	document.body.appendChild(div);
+	ReactDOM.render(<ActionBar></ActionBar>, div);
+}
+

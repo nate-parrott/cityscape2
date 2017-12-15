@@ -103,7 +103,9 @@ let lerpCoords = (a, b, t) => {
 }
 
 let moveInDirection = (fromCoord, toCoord, distance) => {
-  let lerpAmount = distance / dist(fromCoord, toCoord);
+	let totalDist = dist(fromCoord, toCoord);
+	if (totalDist === 0) return toCoord;
+  let lerpAmount = distance / totalDist;
   return lerpCoords(fromCoord, toCoord, lerpAmount);
 }
 

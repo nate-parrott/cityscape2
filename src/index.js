@@ -1,5 +1,6 @@
 import { testTicking } from './tests';
 import { defaultCity } from './city.js';
+import { transportTestCity } from './transportTestCity.js';
 import { tick } from './tick.js';
 import { showBrowserWindow } from './browser.jsx';
 import { showUI } from './ui.jsx'
@@ -22,7 +23,8 @@ const BasicShader = require('three-line-2d/shaders/basic')(THREE);
 
 const backgroundColor = 0xffffff;
 const groundColor = 0xffffff;
-const networkColor = 0xE5E5E5;
+const roadColor = 0xE5E5E5;
+const trainColor = 0xB5B5B5;
 const residentialColor = 0xB3D28A;
 const commercialColor = 0xADD1FC;
 const personColor = 0xB5A8BA;
@@ -33,10 +35,15 @@ const groundMaterial = new THREE.MeshBasicMaterial( {
 } );
 const commercialBuildingMaterial = new THREE.MeshBasicMaterial( { color: commercialColor } );
 const residentialBuildingMaterial = new THREE.MeshBasicMaterial( { color: residentialColor } );
-const networkNodeMaterial = new THREE.MeshBasicMaterial( { color: networkColor } );
+const networkNodeMaterial = new THREE.MeshBasicMaterial( { color: roadColor } );
 const networkEdgeMaterial = new THREE.ShaderMaterial(BasicShader({
     side: THREE.DoubleSide,
-    diffuse: networkColor,
+    diffuse: roadColor,
+    thickness: 0.5
+}));
+const networkTrainEdgeMaterial = new THREE.ShaderMaterial(BasicShader({
+    side: THREE.DoubleSide,
+    diffuse: trainColor,
     thickness: 0.5
 }));
 const personMaterial = new THREE.MeshBasicMaterial({ color: personColor });
@@ -108,7 +115,7 @@ city.interfaceStateGroup = new THREE.Group();
 city.scene.add(city.interfaceStateGroup);
 
 // load the city json:
-city.simState = defaultCity;
+city.simState = transportTestCity; // defaultCity;
 let timePerTick = 1 / 60;
 let tickFrequency = 100;
 
@@ -315,7 +322,11 @@ const drawState = (state) => {
         }
         if (startNode && endNode) {
             const edgeLine = new LineMesh( [[startNode.coordinate.x, startNode.coordinate.y], [endNode.coordinate.x, endNode.coordinate.y]] );
-            const edgeMesh = new THREE.Mesh(edgeLine, networkEdgeMaterial)
+						let material = {
+							road: networkEdgeMaterial,
+							train: networkTrainEdgeMaterial
+						}[edge.typeId];
+            const edgeMesh = new THREE.Mesh(edgeLine, material)
             edgeMesh.bindingId = edgeId;
             city.simStateGroup.add(edgeMesh);
             city.edgeMeshArray.push(edgeMesh);
@@ -362,6 +373,6 @@ const animate = () => {
 	city.renderer.render( city.scene, city.camera );
 }
 
-showBrowserWindow(city);
+// showBrowserWindow(city);
 showUI(city);
 animate();

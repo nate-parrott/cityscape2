@@ -525,7 +525,7 @@ export let defaultCity = {
         ...newWorkplace(),
         "coordinate": {
           "x": -4,
-          "y": 3.5,
+          "y": 2.5,
           "rotation": 3.141592653589793
         },
         "dimension": {
@@ -539,7 +539,7 @@ export let defaultCity = {
         ...newWorkplace(),
         "coordinate": {
           "x": -3,
-          "y": 3.5,
+          "y": 2.5,
           "rotation": 3.141592653589793
         },
         "dimension": {
@@ -553,7 +553,7 @@ export let defaultCity = {
         ...newWorkplace(),
         "coordinate": {
           "x": -2,
-          "y": 3.5,
+          "y": 2.5,
           "rotation": 3.141592653589793
         },
         "dimension": {
@@ -567,7 +567,7 @@ export let defaultCity = {
         ...newWorkplace(),
         "coordinate": {
           "x": -1,
-          "y": 3.5,
+          "y": 2.5,
           "rotation": 3.141592653589793
         },
         "dimension": {

@@ -214,10 +214,6 @@ class CityscapeScene extends Component {
         window.removeEventListener("resize", this.updateDimensions);
     }
     
-    // shouldComponentUpdate() {
-    //     return false;
-    // }
-    
     render() {
         return (
             <div className="sceneContainer" ref={(mountTarget) => { this.mountTarget = mountTarget }}>

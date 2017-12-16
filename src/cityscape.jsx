@@ -46,6 +46,7 @@ const realTimePerTick = 300;
 const simTimePerTick = realTimePerTick / (6000);
 
 const backgroundColor = 0xffffff;
+const gridColor = 0xeaeaea;
 const groundColor = 0xffffff;
 const roadColor = 0xE5E5E5;
 const trackColor = 0xB5B5B5;
@@ -187,7 +188,8 @@ class CityscapeScene extends Component {
         hTiltPass.uniforms[ 'h' ].value = 1/1024;
         vTiltPass.uniforms[ 'v' ].value = 1/720;
 		
-		const smaaPass = new THREE.SMAAPass(512, 512);
+		const smaaPass = new THREE.SMAAPass(1920, 1080);
+		
 
         vTiltPass.renderToScreen = true;
 		
@@ -220,7 +222,7 @@ class CityscapeScene extends Component {
         this.groundPlaneMesh.position.z = -0.01;
         this.scene.add( this.groundPlaneMesh );
         
-        this.grid = new GridHelper( 100, 100 );
+        this.grid = new GridHelper( 100, 100, gridColor, gridColor);
         this.grid.name = "grid";
         this.grid.rotation.x = Math.PI / 2;
         this.grid.position.x = -0.5;

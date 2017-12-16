@@ -31,6 +31,10 @@ acorn@^5.0.0:
   version "5.1.2"
   resolved "https://registry.yarnpkg.com/acorn/-/acorn-5.1.2.tgz#911cb53e036807cf0fa778dc5d370fbd864246d7"
 
+aframe-effects@^0.5.0:
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/aframe-effects/-/aframe-effects-0.5.0.tgz#9e65c41dfd57874c9baf48a0afff7517228462a8"
+
 ajv-keywords@^2.0.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/ajv-keywords/-/ajv-keywords-2.1.0.tgz#a296e17f7bfae7c1ce4f7e0de53d29cb32162df0"
@@ -3385,6 +3389,10 @@ three-line-2d@^1.1.6:
     inherits "^2.0.1"
     object-assign "^4.0.1"
     polyline-normals "^2.0.0"
+
+three-shader-fxaa@^5.1.1:
+  version "5.1.1"
+  resolved "https://registry.yarnpkg.com/three-shader-fxaa/-/three-shader-fxaa-5.1.1.tgz#636f6981df6977ab4105bc3f96bbea39afa8f483"
 
 three@^0.87.1:
   version "0.87.1"

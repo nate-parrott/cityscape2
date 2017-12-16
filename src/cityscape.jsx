@@ -18,6 +18,25 @@ import * as THREE from 'three';
 self.THREE = THREE;
 require("./orbitControls");
 require("./dragControls");
+
+// require('aframe-effects');
+
+require("three/examples/js/shaders/SSAOShader");
+require("three/examples/js/shaders/SMAAShader");
+require("three/examples/js/shaders/SMAAShader");
+require("three/examples/js/shaders/BokehShader");
+require("../lib/js/shaders/HorizontalTiltShiftShader");
+require("../lib/js/shaders/VerticalTiltShiftShader");
+
+const fxaa = require('three-shader-fxaa');
+
+require("../lib/js/postprocessing/EffectComposer");
+require("../lib/js/postprocessing/RenderPass");
+require("../lib/js/postprocessing/ShaderPass");
+require("../lib/js/postprocessing/SSAOPass");
+require("../lib/js/postprocessing/SMAAPass");
+require("../lib/js/postprocessing/BokehPass");
+
 const LineGeometry = require('three-line-2d')(THREE);
 const LineBasicShader = require('three-line-2d/shaders/basic')(THREE);
 
@@ -148,6 +167,44 @@ class CityscapeScene extends Component {
         this.camera.up.set( 0, 0, 1);
         this.camera.position.z = 20;
         
+        const renderPass = new THREE.RenderPass(this.scene, this.camera);
+        
+        const ssaoPass = new THREE.SSAOPass(this.scene, this.camera);
+		ssaoPass.radius = 16;
+		ssaoPass.aoClamp = .25;
+		ssaoPass.lumInfluence = .7;
+        
+        const bokehPass = new THREE.BokehPass( this.scene, this.camera, {
+			focus: 		0.98,
+			aperture:	0.025,
+			maxblur:	1.0,
+		} );
+		
+		const hTiltPass = new THREE.ShaderPass(THREE.HorizontalTiltShiftShader);
+		const vTiltPass = new THREE.ShaderPass(THREE.VerticalTiltShiftShader);
+		hTiltPass.uniforms[ 'r' ].value = .5;
+        vTiltPass.uniforms[ 'r' ].value = .5;
+        hTiltPass.uniforms[ 'h' ].value = 1/1024;
+        vTiltPass.uniforms[ 'v' ].value = 1/720;
+		
+		const smaaPass = new THREE.SMAAPass(512, 512);
+
+        vTiltPass.renderToScreen = true;
+		
+		this.effectComposer = new THREE.EffectComposer(this.renderer);
+		this.effectComposer.addPass( renderPass );
+		this.effectComposer.addPass( ssaoPass );
+		this.effectComposer.addPass( smaaPass );
+// 		this.effectComposer.addPass( bokehPass );
+        this.effectComposer.addPass( hTiltPass );
+        this.effectComposer.addPass( vTiltPass );
+
+        // this.effects = new AFRAME.Effects(this.renderer, this.scene, this.camera);
+        // this.effects.init("fxaa");
+        // this.effects.init("bloom");
+        // this.effects.init("ssao");
+        // this.effects.chain( [ "fxaa" ] );
+        
         this.mountTarget.appendChild(this.renderer.domElement);
         this.controls = new THREE.OrbitControls( this.camera, this.renderer.domElement );
         
@@ -200,7 +257,10 @@ class CityscapeScene extends Component {
     startRender() {
         requestAnimationFrame(this.startRender);
         TWEEN.update();
-        this.renderer.render(this.scene, this.camera);
+        this.effectComposer.render();
+        // this.renderer.render(this.scene, this.camera);
+        // this.renderer.render(this.scene, this.camera, this.effects.renderTarget);
+        // this.effects.render();
     }
     
     updateDimensions() {
@@ -218,7 +278,7 @@ class CityscapeScene extends Component {
         return (
             <div className="sceneContainer" ref={(mountTarget) => { this.mountTarget = mountTarget }}>
                 <SimStateGroupManager simState={this.props.simState} simStateGroup={this.simStateGroup} simStateSubgroups={this.simStateSubgroups}/>
-                <CameraManager renderer={this.renderer} camera={this.camera} width={this.state.width} height={this.state.height}/>
+                <CameraManager renderer={this.renderer} camera={this.camera} effectComposer={this.effectComposer} width={this.state.width} height={this.state.height}/>
             </div>
         )
     }
@@ -350,12 +410,17 @@ class SimStateGroupManager extends Component {
 }
 
 function CameraManager(props) {
-    if(props.camera && props.width && props.height) {
-        props.camera.aspect = props.width / props.height;
-        props.camera.updateProjectionMatrix();
-    }
-    if(props.renderer && props.width && props.height) {
-        props.renderer.setSize(props.width, props.height);
+    if(props.width && props.height) {
+        if(props.camera) {
+            props.camera.aspect = props.width / props.height;
+            props.camera.updateProjectionMatrix();
+        }
+        if(props.renderer) {
+            props.renderer.setSize(props.width, props.height);
+        }
+        if(props.effectComposer) {
+            props.effectComposer.setSize(props.width, props.height);    
+        }
     }
     return null;
 }

@@ -36,10 +36,5 @@ function ToolButton(props) {
     )
 }
 
-export let showUI = (city) => {
-	let div = document.createElement("div");
-	div.id = "bottomContent";
-	document.body.appendChild(div);
-	ReactDOM.render(<ActionBar></ActionBar>, div);
-}
+export default ActionBar;
 

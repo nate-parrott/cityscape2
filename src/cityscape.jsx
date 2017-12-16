@@ -6,7 +6,7 @@ import TWEEN from '@tweenjs/tween.js';
 import { defaultCity } from './city.js';
 import { tick } from './tick.js';
 import { showBrowserWindow } from './browser.jsx';
-import { showUI } from './ui.jsx'
+import ActionBar from './ui.jsx'
 
 import { 
     WebGLRenderer, 
@@ -88,6 +88,10 @@ class Cityscape extends Component {
         this.startSimulation();
     }
     
+    componentDidMount() {
+        showBrowserWindow(this.state);
+    }
+    
     startSimulation() {
         this.intervalId = setInterval(() => {
             this.setState({
@@ -105,6 +109,9 @@ class Cityscape extends Component {
         return (
             <div>
                 <CityscapeScene simState={this.state.currentSimState}/>
+                <div id="bottomContent">
+                    <ActionBar/>
+                </div>
             </div>
         )
     }

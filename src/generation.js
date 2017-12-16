@@ -1,5 +1,5 @@
 import Constants from './constants.js';
-let { minDailyWage, maxDailyWage, lifespanYears } = Constants;
+let { minDailyWage, maxDailyWage, minDailyRent, maxDailyRent, lifespanYears } = Constants;
 import { personName, apartmentName, businessName } from './generateNames.js';
 import { generateId } from './utils.js';
 
@@ -32,9 +32,9 @@ export let newApartment = () => {
   return {
     typeId: 'home',
 		name: apartmentName(),
-    occupancy: 10,
+    occupancy: 5,
     occupants: [],
-    rent: 1,
+    rent: minDailyRent + (maxDailyRent - minDailyRent) * Math.random(),
     dimension: {x: 1, y: 0.75, z: 1},
     coordinate: null,
     edgeId: null
@@ -71,7 +71,7 @@ export let newAgent = (ageFraction) => {
 		name: personName(),
     position: {
       edgeId: "e000",
-      distance: 0.3
+      distance: Math.random()
     },
 		currentBuildingId: null,
 		satisfaction: {rest: 1, fun: 0.5},

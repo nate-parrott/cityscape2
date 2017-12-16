@@ -338,13 +338,12 @@ class SimStateGroupManager extends Component {
                         TWEEN.remove(personMesh.userData.tween);
                     }
                     personMesh.userData.tween = new TWEEN.Tween(personMesh.position)
-                        .to({...coordinate}, realTimePerTick)
+                        .to(coordinate, realTimePerTick)
                         .onComplete(() => personMesh.userData.tween = undefined)
                         .start();
                 }
             }
         }
-        
         
         return null;
     }

@@ -19,7 +19,7 @@ let deepcopy = (json) => {
 
 class City { // cities should be used for ONE tick only, and then discarded
   constructor(json) {
-    json = deepcopy(json);
+    // json = deepcopy(json);
     this.json = json;
     this.map = json.map;
     this.agents = json.agents;

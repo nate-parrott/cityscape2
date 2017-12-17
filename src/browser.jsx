@@ -18,7 +18,7 @@ class Browser extends Component {
 		this.reload();
 	}
 	reload() {
-		this.setState({simState: this.props.city.simState});
+		this.setState({simState: this.props.city.currentSimState});
 	}
 	render() {
 		return (

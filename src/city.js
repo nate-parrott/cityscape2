@@ -525,7 +525,7 @@ export let defaultCity = {
         ...newWorkplace(),
         "coordinate": {
           "x": -4,
-          "y": 3.5,
+          "y": 2.5,
           "rotation": 3.141592653589793
         },
         "dimension": {
@@ -539,7 +539,7 @@ export let defaultCity = {
         ...newWorkplace(),
         "coordinate": {
           "x": -3,
-          "y": 3.5,
+          "y": 2.5,
           "rotation": 3.141592653589793
         },
         "dimension": {
@@ -553,7 +553,7 @@ export let defaultCity = {
         ...newWorkplace(),
         "coordinate": {
           "x": -2,
-          "y": 3.5,
+          "y": 2.5,
           "rotation": 3.141592653589793
         },
         "dimension": {
@@ -567,7 +567,7 @@ export let defaultCity = {
         ...newWorkplace(),
         "coordinate": {
           "x": -1,
-          "y": 3.5,
+          "y": 2.5,
           "rotation": 3.141592653589793
         },
         "dimension": {
@@ -648,13 +648,48 @@ export let defaultCity = {
         },
         "edgeId": "e000"
       },
+      "b020": {
+        ...newApartment(),
+        "coordinate": {
+          "x": 3,
+          "y": 0.5,
+          "rotation": 0
+        },
+        "dimension": {
+          "x": 1,
+          "y": 0.75,
+          "z": 1
+        },
+        "edgeId": "e001"
+      },
+      "b021": {
+        ...newApartment(),
+        "coordinate": {
+          "x": 3,
+          "y": -0.5,
+          "rotation": Math.PI
+        },
+        "dimension": {
+          "x": 1,
+          "y": 0.75,
+          "z": 1
+        },
+        "edgeId": "e001"
+      },
     }
   },
   "agents": {
     "people": {
       "p000": newAgent(),
 			"p001": newAgent(),
-			"p002": newAgent()
+			"p002": newAgent(),
+			"p003": newAgent(),
+			"p004": newAgent(),
+			"p005": newAgent(),
+			"p006": newAgent(),
+			"p007": newAgent(),
+			"p008": newAgent(),
+			"p009": newAgent(),
     }
   },
   "simulation": {

@@ -154,4 +154,4 @@ let closestPointToLineSegment = (v, w, p) => {
 
 let pick1 = (list) => list[(Math.random() * list.length) | 0];
 
-module.exports = {astar, dist, lerp, moveInDirection, distanceRatio, closestPointToLineSegment, pick1};
+module.exports = {astar, dist, lerp, lerpCoords, moveInDirection, distanceRatio, closestPointToLineSegment, pick1};

@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 
 import TWEEN from '@tweenjs/tween.js';
 
+import { lerpCoords } from '../lib/utils.js'
 import { defaultCity } from '../tests/city.js';
 import { tick } from '../simulation/tick.js';
 import { showBrowserWindow } from './ui/browser.jsx';
@@ -90,13 +91,6 @@ const buildingTypes = {
     },
     "home": {
         material: residentialBuildingMaterial,
-    }
-}
-
-const lerpCoordinates = ( coordinateA, coordinateB, progress ) => {
-    return {
-        x: coordinateA.x + (coordinateB.x - coordinateA.x) * progress,
-        y: coordinateA.y + (coordinateB.y - coordinateA.y) * progress,
     }
 }
 
@@ -394,7 +388,7 @@ class SimStateGroupManager extends Component {
                 const edge = network.edges[person.position.edgeId];
                 const endNode = network.nodes[edge.endId];
                 const startNode = network.nodes[edge.startId];
-                const coordinate = lerpCoordinates(startNode.coordinate, endNode.coordinate, person.position.distance);
+                const coordinate = lerpCoords(startNode.coordinate, endNode.coordinate, person.position.distance);
                 const personMesh = meshCache.has(personId) ? meshCache.get(personId) : this.createPersonMesh(personId);
                 if (personMesh.position.x !== coordinate.x || personMesh.position.y !== coordinate.y) {
                     if(personMesh.userData.tween) {

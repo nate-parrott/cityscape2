@@ -21,6 +21,7 @@ require("./dragControls");
 
 // require('aframe-effects');
 
+require("three/examples/js/shaders/CopyShader");
 require("three/examples/js/shaders/SSAOShader");
 require("three/examples/js/shaders/SMAAShader");
 require("three/examples/js/shaders/SMAAShader");

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import { getTweets } from '../../simulation/twitter.js';
-import { formatTickAsTime } from '../../simulation/time.js';
+import { tickToLocaleDateString } from '../../simulation/time.js';
 import Constants, { ticksPerYear } from '../../simulation/constants.js';
 
 let formatEuros = (e) => {
@@ -17,7 +17,7 @@ export let WelcomePage = ({simState, navigate}) => {
 	return (
 		<div className='WelcomePage'>
 			<h1>Welcome to the World Wide Teletype System!</h1>
-			<p>The current time is: <strong>{formatTickAsTime(simState.simulation.tick)}</strong></p>
+			<p>At the tone, the time will be: <br/> <strong>{tickToLocaleDateString(simState.simulation.tick)}</strong></p>
 			<p>Use this space-age tool to find anything you want! Find a job, find an apartment, find truth, even find love!</p>
 			<p>Your kingdom awaits!</p>
 		</div>
@@ -122,7 +122,7 @@ let SatisfactionRow = ({agent}) => {
 
 let TweetCell = ({tweet}) => {
 	let {text, tick} = tweet;
-	return <div className='TweetCell'><p>{text}</p><p className='time'>{formatTickAsTime(tick)}</p></div>;
+	return <div className='TweetCell'><p>{text}</p><p className='time'>{tickToLocaleDateString(tick)}</p></div>;
 }
 
 export let RoomsterPage = ({navigate, simState}) => {

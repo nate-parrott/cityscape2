@@ -29,6 +29,6 @@ export const tickToJSDate = (tick) => {
 	return new Date(year, 0, day + 1, hour, minute, 0);
 }
 
-export const tickToLocaleDateString = (tick) => {
-	return tickToJSDate(tick).toLocaleDateString(undefined,localeDateStringOptions)
+export const tickToLocaleDateString = (tick, options) => {
+	return tickToJSDate(tick).toLocaleDateString(undefined,(options ? options : localeDateStringOptions))
 }

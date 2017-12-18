@@ -19,6 +19,7 @@
 	align-items: center;
 	background-color: #eee;
 	flex-shrink: 0;
+	user-select: none;
 }
 .FloatingWindow .titleBar .title {
 	font-weight: bold;
@@ -52,6 +53,9 @@
 	align-items: center;
 	justify-content: center;
 	flex-shrink: 0;
+}
+.NavBar {
+	user-select: none;
 }
 .BookmarksBar {
 	flex-grow: 1;

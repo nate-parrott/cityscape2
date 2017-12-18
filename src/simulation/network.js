@@ -1,4 +1,4 @@
-import { astar, dist, lerp, moveInDirection, distanceRatio, closestPointToLineSegment } from './utils';
+import { astar, dist, lerp, moveInDirection, distanceRatio, closestPointToLineSegment } from '../lib/utils';
 
 export default class Network {
   constructor(net) {

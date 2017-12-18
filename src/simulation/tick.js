@@ -2,7 +2,7 @@ import Network from './network.js';
 import { tweet } from './twitter.js';
 import Constants, { ticksPerYear } from './constants.js';
 let {realSecondsPerSimulatedHour, restDepletionPerHour, funDepletionPerHour, morningHours } = Constants;
-import { pick1 } from './utils.js';
+import { pick1 } from '../lib/utils.js';
 import Person from './person.js';
 import { tickToTime } from './time.js';
 

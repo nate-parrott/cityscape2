@@ -1,5 +1,5 @@
 
-import { mountCityscape } from './cityscape.jsx'
+import { mountCityscape } from './frontend/cityscape.jsx'
 
 
 // const snapToGrid = (vector) => {

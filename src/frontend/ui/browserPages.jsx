@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import { getTweets } from './twitter.js';
-import { formatTickAsTime } from './time.js';
-import Constants, { ticksPerYear } from './constants.js';
+import { getTweets } from '../../simulation/twitter.js';
+import { formatTickAsTime } from '../../simulation/time.js';
+import Constants, { ticksPerYear } from '../../simulation/constants.js';
 
 let formatEuros = (e) => {
 	return "€" + Math.round(e * 100) / 100;

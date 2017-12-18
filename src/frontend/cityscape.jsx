@@ -3,10 +3,10 @@ import ReactDOM from 'react-dom';
 
 import TWEEN from '@tweenjs/tween.js';
 
-import { defaultCity } from './city.js';
-import { tick } from './tick.js';
-import { showBrowserWindow } from './browser.jsx';
-import ActionBar from './ui.jsx'
+import { defaultCity } from '../tests/city.js';
+import { tick } from '../simulation/tick.js';
+import { showBrowserWindow } from './ui/browser.jsx';
+import ActionBar from './ui/ui.jsx'
 
 import { 
     WebGLRenderer, 
@@ -25,17 +25,17 @@ require("three/examples/js/shaders/SSAOShader");
 require("three/examples/js/shaders/SMAAShader");
 require("three/examples/js/shaders/SMAAShader");
 require("three/examples/js/shaders/BokehShader");
-require("../lib/js/shaders/HorizontalTiltShiftShader");
-require("../lib/js/shaders/VerticalTiltShiftShader");
+require("../lib/shaders/HorizontalTiltShiftShader");
+require("../lib/shaders/VerticalTiltShiftShader");
 
 const fxaa = require('three-shader-fxaa');
 
-require("../lib/js/postprocessing/EffectComposer");
-require("../lib/js/postprocessing/RenderPass");
-require("../lib/js/postprocessing/ShaderPass");
-require("../lib/js/postprocessing/SSAOPass");
-require("../lib/js/postprocessing/SMAAPass");
-require("../lib/js/postprocessing/BokehPass");
+require("../lib/postprocessing/EffectComposer");
+require("../lib/postprocessing/RenderPass");
+require("../lib/postprocessing/ShaderPass");
+require("../lib/postprocessing/SSAOPass");
+require("../lib/postprocessing/SMAAPass");
+require("../lib/postprocessing/BokehPass");
 
 const LineGeometry = require('three-line-2d')(THREE);
 const LineBasicShader = require('three-line-2d/shaders/basic')(THREE);

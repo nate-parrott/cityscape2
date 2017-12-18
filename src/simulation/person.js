@@ -1,7 +1,7 @@
 import Constants, { ticksPerYear } from './constants.js';
 let {realSecondsPerSimulatedHour, restDepletionPerHour, restReplenishmentPerHourSleeping, funDepletionPerHour, restThresholdToSleepOnStreet, restThresholdToSleepAtHome, maxHousingCostAsFractionOfIncome, maxSleepTime, wakeupHour, hoursPerDay, walkingSpeedUnitsPerHour, sleepMaxDuration, workDuration} = Constants;
 import { tweet } from './twitter.js';
-import { pick1 } from './utils.js';
+import { pick1 } from '../lib/utils.js';
 import { timeFromTick } from './time.js';
 
 export default class Person { // person objects should modify their internal json

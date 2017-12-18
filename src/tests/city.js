@@ -1,4 +1,4 @@
-import {newApartment, newWorkplace, newAgent} from './generation.js';
+import {newApartment, newWorkplace, newAgent} from '../simulation/generation.js';
 
 export let defaultCity = {
   "map": {

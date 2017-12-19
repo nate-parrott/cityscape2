@@ -1,4 +1,7 @@
 import { astar, dist, lerp, moveInDirection, distanceRatio, closestPointToLineSegment } from '../lib/utils';
+import Constants from './constants.js';
+const { walkingSpeedUnitsPerHour, trainSpeedUnitsPerHour } = Constants;
+let maxTransitSpeed = trainSpeedUnitsPerHour;
 
 export default class Network {
   constructor(net) {
@@ -17,6 +20,14 @@ export default class Network {
 		let endPos = this.nodes[endId].coordinate;
 		return dist(startPos, endPos);
 	}
+	costForEdge(edgeId) {
+		let edge = this.edges[edgeId];
+		let speed = {
+			train: trainSpeedUnitsPerHour
+		}[edge.typeId] || walkingSpeedUnitsPerHour;
+		let cost = this.edgeLength(edgeId) / speed;
+		return cost;
+	}
   calcRoute(startCoord, startEdgeId, endCoord, endEdgeId) {
     // returns a list of edge ids, including the start and end:
     if (startEdgeId === endEdgeId) {
@@ -33,12 +44,12 @@ export default class Network {
     }
     let edgeFunc = (nodeId) => {
       return (this.edgeIdsFromNodeId[nodeId] || []).map((edgeId) => {
-        let edge = this.edges[edgeId];
-        return {edgeId, nodeId: edge.endId, edgeCost: dist(this.nodes[edge.startId].coordinate, this.nodes[edge.endId].coordinate)};
+				let edge = this.edges[edgeId];
+        return {edgeId, nodeId: edge.endId, edgeCost: this.costForEdge(edgeId)};
       });
     }
     let heuristicFunc = (nodeId) => {
-      return dist(this.nodes[nodeId].coordinate, endCoord);
+      return dist(this.nodes[nodeId].coordinate, endCoord) / maxTransitSpeed * 0.99;
     }
     let startNodeId = this.edges[startEdgeId].endId;
     let endNodeId = this.edges[endEdgeId].startId;

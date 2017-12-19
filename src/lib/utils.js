@@ -70,7 +70,7 @@ let astar = function(startNodeId, endNodeId, edgeFunc, heuristicFunc) {
   // heuristicFunc: (nodeId) -> underestimated cost
   // returns {path, cost}, where path is a list of [{edgeId, nodeId}] pairs.
   let q = new PriorityQueue();
-  q.add({path: [], cost: 0, curNodeId: startNodeId});
+  q.add({path: [], cost: 0, curNodeId: startNodeId}, 0);
   let seenNodeIds = {};
   seenNodeIds[startNodeId] = 1;
   while (!q.isEmpty()) {
@@ -86,7 +86,7 @@ let astar = function(startNodeId, endNodeId, edgeFunc, heuristicFunc) {
       if (!seenNodeIds[nodeId]) {
         // add this to the queue:
         let heuristicCost = heuristicFunc(nodeId);
-        q.add({path: newPath, curNodeId: nodeId, cost: newCost + heuristicCost});
+        q.add({path: newPath, curNodeId: nodeId, cost: newCost + heuristicCost}, newCost + heuristicCost);
       }
     }
   }

@@ -163,8 +163,9 @@ class CityscapeScene extends Component {
     }
     
     initializeScene() {
-        this.groundPlane = new THREE.PlaneBufferGeometry( 100, 100 );
-        this.groundPlaneMesh = new THREE.Mesh( this.groundPlane, groundMaterial );
+        this.groundPlane = new THREE.Plane(new THREE.Vector3(0, 0, 1));
+        this.groundPlaneGeometry = new THREE.PlaneBufferGeometry( 100, 100 );
+        this.groundPlaneMesh = new THREE.Mesh( this.groundPlaneGeometry, groundMaterial );
         this.groundPlaneMesh.name = "groundPlane";
         this.groundPlaneMesh.position.z = -0.01;
         this.scene.add( this.groundPlaneMesh );

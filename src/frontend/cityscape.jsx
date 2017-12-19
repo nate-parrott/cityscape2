@@ -1,8 +1,11 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 
+import * as THREE from 'three';
+
 import { defaultCity } from '../tests/city.js';
 import { tick } from '../simulation/tick.js';
+import { snapToGrid } from '../lib/utils.js'
 
 import CityscapeScene from './cityscapeScene.jsx';
 
@@ -14,17 +17,91 @@ import ActionBar from './ui/ui.jsx'
 const realTimePerTick = 300;
 const simTimePerTick = realTimePerTick / (6000);
 
+const Tool = class {
+    constructor(cityscape) {
+        this.cityscape = cityscape;
+        this.scene = this.cityscape.scene;
+        
+        this.rayCaster = new THREE.Raycaster();
+        this.pointerVector = new THREE.Vector3();
+    }
+    
+    setPointerVector(evt) {
+        const rect = this.scene.renderer.domElement.getBoundingClientRect();
+        this.pointerVector.x = (( evt.clientX - rect.left ) / rect.width ) * 2 - 1;
+        this.pointerVector.y = -(( evt.clientY - rect.top ) / rect.height ) * 2 + 1;
+    }
+    
+    onClick(evt) {
+    }
+}
+
+const CreateRoadTool = class extends Tool {
+    constructor(cityscape) {
+        super(cityscape);
+    }
+    
+    onClick(evt) {
+        this.setPointerVector(evt);
+        this.rayCaster.setFromCamera(this.pointerVector, this.scene.camera);
+        const nodeIntersects = this.rayCaster.intersectObjects(this.scene.simStateSubgroups.networkNodeGroup.children);
+        
+        if(this.activeNodeMesh) {
+            
+        }
+        
+        if (nodeIntersects.length > 0) {
+            if(this.activeNodeMesh) {
+                const nodeB = nodeIntersects[0].object;
+                const newEdgeIdA = this.cityscape.createEdge("road", this.activeNodeMesh.name, nodeB.name);
+                const newEdgeIdB = this.cityscape.createEdge("road", nodeB.name, this.activeNodeMesh.name);
+                this.activeNodeMesh = undefined;
+            } else {
+                this.activeNodeMesh = nodeIntersects[0].object; 
+            }
+        } else if(this.activeNodeMesh) {
+            const groundIntersects = this.rayCaster.ray.intersectPlane(this.scene.groundPlane);
+            if (groundIntersects) {
+                const newNodeId = this.cityscape.createNode(snapToGrid(groundIntersects));
+                const newEdgeIdA = this.cityscape.createEdge("road", this.activeNodeMesh.name, newNodeId);
+                const newEdgeIdB = this.cityscape.createEdge("road", newNodeId, this.activeNodeMesh.name);
+                this.activeNodeMesh = undefined;
+            }
+        }
+    }
+}
+
 class Cityscape extends Component {
     constructor(props) {
         super(props)
         this.state = {
             currentSimState: defaultCity,
         }
+        
+        this.setScene = this.setScene.bind(this);
+        this.onClick = this.onClick.bind(this);
+        
         this.startSimulation();
     }
     
     componentDidMount() {
         showBrowserWindow(this.state);
+        
+        this.scene.renderer.domElement.addEventListener('click', this.onClick);
+        
+        this.setState({
+            activeTool: new CreateRoadTool(this),
+        })
+    }
+    
+    onClick(evt) {
+        if (this.state.activeTool) {
+            this.state.activeTool.onClick(evt);
+        }
+    }
+    
+    setScene(scene) {
+        this.scene = scene;
     }
     
     startSimulation() {
@@ -73,7 +150,7 @@ class Cityscape extends Component {
     render() {
         return (
             <div>
-                <CityscapeScene simState={this.state.currentSimState} realTimePerTick={realTimePerTick}/>
+                <CityscapeScene simState={this.state.currentSimState} realTimePerTick={realTimePerTick} ref={this.setScene}/>
                 <div id="bottomContent">
                     <ActionBar/>
                 </div>

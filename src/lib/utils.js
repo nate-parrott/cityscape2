@@ -166,6 +166,12 @@ const perpendicular = (v1, v2, m) => {
   }
 }
 
+const snapToGrid = (vector) => {
+    vector.x = Math.round(vector.x);
+    vector.y = Math.round(vector.y);
+    return vector;
+}
+
 let pick1 = (list) => list[(Math.random() * list.length) | 0];
 
-module.exports = {astar, dist, lerp, lerpCoords, moveInDirection, distanceRatio, closestPointToLineSegment, pick1, perpendicular};
+module.exports = {astar, dist, lerp, lerpCoords, moveInDirection, distanceRatio, closestPointToLineSegment, pick1, perpendicular, snapToGrid};

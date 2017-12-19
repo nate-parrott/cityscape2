@@ -13,19 +13,26 @@ class Browser extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {simState: null, nav: bookmarks[0].nav, navStack: [], selectedTab: 'friendster'};
+		
+		this.navigate = this.navigate.bind(this);
+		this.back = this.back.bind(this);
+		this.reload = this.reload.bind(this);
 	}
 	componentDidMount() {
 		this.reload();
+		setInterval(() => {
+			this.reload();
+		}, 100);
 	}
 	reload() {
-		this.setState({simState: this.props.city.currentSimState});
+		this.forceUpdate();
 	}
 	render() {
 		return (
 			<div className='Browser'>
 				<div className='NavBar'>
 					{this.renderActions()}
-					<BookmarksBar bookmarks={bookmarks} onNavigate={this.navigate.bind(this)} />
+					<BookmarksBar bookmarks={bookmarks} onNavigate={this.navigate} />
 				</div>
 				<div className='content'>{this.renderContent()}</div>
 			</div>
@@ -38,8 +45,8 @@ class Browser extends Component {
 	renderActions() {
 		return (
 			<div className='browserButtons'>
-				<i className='fa fa-arrow-left' onClick={this.back.bind(this)} />
-				<i className='fa fa-refresh' onClick={this.reload.bind(this)} />
+				<i className='fa fa-arrow-left' onClick={this.back} />
+				<i className='fa fa-refresh' onClick={this.reload} />
 			</div>
 		);
 	}
@@ -54,7 +61,7 @@ class Browser extends Component {
 	renderContent() {
 		if (!this.state.nav) return null;
 		let Component = this.state.nav.component;
-		return <Component navigate={this.navigate.bind(this)} simState={this.state.simState} {...this.state.nav} />;
+		return <Component navigate={this.navigate} simState={this.props.city.currentSimState} {...this.state.nav} />;
 	}
 }
 
@@ -73,11 +80,15 @@ class FloatingWindow extends Component {
 		super(props);
 		this.state = {x: 100, y: 100};
 		this.posAtDragStart = null;
+		
+		this.mouseDown = this.mouseDown.bind(this);
+		this.mouseUp = this.mouseUp.bind(this);
+		this.mouseMove =this.mouseMove.bind(this);
 	}
 	render() {
 		return (
 			<div className='FloatingWindow' style={{top: this.state.y, left: this.state.x}}>
-			<div className='titleBar' onMouseDown={this.mouseDown.bind(this)} onMouseUp={this.mouseUp.bind(this)} onMouseMove={this.mouseMove.bind(this)}>
+			<div className='titleBar' onMouseDown={this.mouseDown} onMouseUp={this.mouseUp} onMouseMove={this.mouseMove}>
 					<div className='title'>{this.props.title}</div>
 					<div className='actions'><div onClick={() => this.props.onClose()}><i className='fa fa-times' /></div></div>
 				</div>

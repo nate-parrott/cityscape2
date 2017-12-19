@@ -152,6 +152,26 @@ let closestPointToLineSegment = (v, w, p) => {
   return addCoords(v, coordTimesScalar(subCoords(w, v), t));
 }
 
+const perpendicular = (v1, v2, m) => {
+  const deltaVector = {
+      x: v1.x - v2.x,
+      y: v1.y - v2.y,
+  }
+  
+  const magnitude = Math.sqrt(deltaVector.x * deltaVector.x + deltaVector.y * deltaVector.y) / m;
+  
+  return {
+    x: deltaVector.y / magnitude,
+    y: -deltaVector.x / magnitude,
+  }
+}
+
+const snapToGrid = (vector) => {
+    vector.x = Math.round(vector.x);
+    vector.y = Math.round(vector.y);
+    return vector;
+}
+
 let pick1 = (list) => list[(Math.random() * list.length) | 0];
 
-module.exports = {astar, dist, lerp, moveInDirection, distanceRatio, closestPointToLineSegment, pick1};
+module.exports = {astar, dist, lerp, lerpCoords, moveInDirection, distanceRatio, closestPointToLineSegment, pick1, perpendicular, snapToGrid};

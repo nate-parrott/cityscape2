@@ -1,4 +1,4 @@
-import { pickN } from './utils.js';
+import { pickN } from '../lib/utils.js';
 
 let searchForHousing = (buildings, person) => {
   // returns the ID of the new apartment, or null

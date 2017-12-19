@@ -1,4 +1,4 @@
-import {newApartment, newWorkplace, newAgent} from './generation.js';
+import {newApartment, newWorkplace, newAgent} from '../simulation/generation.js';
 
 export let defaultCity = {
   "map": {
@@ -379,20 +379,6 @@ export let defaultCity = {
         },
         "edgeId": "e000"
       },
-      "b001": {
-        ...newApartment(),
-        "coordinate": {
-          "x": 5,
-          "y": 0.5,
-          "rotation": 0
-        },
-        "dimension": {
-          "x": 1,
-          "y": 0.75,
-          "z": 1
-        },
-        "edgeId": "e001"
-      },
       "b002": {
         ...newWorkplace(),
         "coordinate": {
@@ -648,6 +634,20 @@ export let defaultCity = {
         },
         "edgeId": "e000"
       },
+      "b001": {
+        ...newApartment(),
+        "coordinate": {
+          "x": 5,
+          "y": 0.5,
+          "rotation": 0
+        },
+        "dimension": {
+          "x": 1,
+          "y": 0.75,
+          "z": 1
+        },
+        "edgeId": "e001r"
+      },
       "b020": {
         ...newApartment(),
         "coordinate": {
@@ -660,7 +660,7 @@ export let defaultCity = {
           "y": 0.75,
           "z": 1
         },
-        "edgeId": "e001"
+        "edgeId": "e001r"
       },
       "b021": {
         ...newApartment(),

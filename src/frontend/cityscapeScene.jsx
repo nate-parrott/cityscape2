@@ -1,12 +1,8 @@
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
+
+import { lerpCoords, perpendicular } from '../lib/utils.js'
 
 import TWEEN from '@tweenjs/tween.js';
-
-import { defaultCity } from './city.js';
-import { tick } from './tick.js';
-import { showBrowserWindow } from './browser.jsx';
-import ActionBar from './ui.jsx'
 
 import { 
     WebGLRenderer, 
@@ -21,29 +17,25 @@ require("./dragControls");
 
 // require('aframe-effects');
 
+require("three/examples/js/shaders/CopyShader");
 require("three/examples/js/shaders/SSAOShader");
 require("three/examples/js/shaders/SMAAShader");
 require("three/examples/js/shaders/SMAAShader");
 require("three/examples/js/shaders/BokehShader");
-require("../lib/js/shaders/HorizontalTiltShiftShader");
-require("../lib/js/shaders/VerticalTiltShiftShader");
+require("../lib/shaders/HorizontalTiltShiftShader");
+require("../lib/shaders/VerticalTiltShiftShader");
 
 const fxaa = require('three-shader-fxaa');
 
-require("../lib/js/postprocessing/EffectComposer");
-require("../lib/js/postprocessing/RenderPass");
-require("../lib/js/postprocessing/ShaderPass");
-require("../lib/js/postprocessing/SSAOPass");
-require("../lib/js/postprocessing/SMAAPass");
-require("../lib/js/postprocessing/BokehPass");
+require("../lib/postprocessing/EffectComposer");
+require("../lib/postprocessing/RenderPass");
+require("../lib/postprocessing/ShaderPass");
+require("../lib/postprocessing/SSAOPass");
+require("../lib/postprocessing/SMAAPass");
+require("../lib/postprocessing/BokehPass");
 
 const LineGeometry = require('three-line-2d')(THREE);
 const LineBasicShader = require('three-line-2d/shaders/basic')(THREE);
-
-// Initialize Constants
-
-const realTimePerTick = 300;
-const simTimePerTick = realTimePerTick / (6000);
 
 const backgroundColor = 0xffffff;
 const gridColor = 0xeaeaea;
@@ -65,18 +57,21 @@ const networkNodeMaterial = new THREE.MeshBasicMaterial( { color: roadColor, nam
 const networkEdgeMaterial = new THREE.ShaderMaterial(LineBasicShader({
     side: THREE.DoubleSide,
     diffuse: roadColor,
-    thickness: 0.5
+    thickness: 0.3
 }));
 networkEdgeMaterial.name = "networkEdge";
 const networkTrainEdgeMaterial = new THREE.ShaderMaterial(LineBasicShader({
     side: THREE.DoubleSide,
     diffuse: trackColor,
-    thickness: 0.5
+    thickness: 0.1
 }));
 networkTrainEdgeMaterial.name = "networkTrainEdge";
+const networkEdgeLineMaterial = new THREE.LineBasicMaterial({
+	color: roadColor,
+});
 const personMaterial = new THREE.MeshBasicMaterial({ color: personColor, name: "person" });
 
-const networkNodeGeometry = new THREE.BoxBufferGeometry( 0.5, 0.5, 0.1 );
+const networkNodeGeometry = new THREE.BoxBufferGeometry( 0.6, 0.6, 0.1 );
 networkNodeGeometry.translate(0, 0, -0.05);
 const buildingGeometry = new THREE.BoxBufferGeometry( 1.0, 1.0, 1.0 );
 buildingGeometry.translate(0, 0.5, 0.5);
@@ -89,51 +84,6 @@ const buildingTypes = {
     },
     "home": {
         material: residentialBuildingMaterial,
-    }
-}
-
-const lerpCoordinates = ( coordinateA, coordinateB, progress ) => {
-    return {
-        x: coordinateA.x + (coordinateB.x - coordinateA.x) * progress,
-        y: coordinateA.y + (coordinateB.y - coordinateA.y) * progress,
-    }
-}
-
-class Cityscape extends Component {
-    constructor(props) {
-        super(props)
-        this.state = {
-            currentSimState: defaultCity,
-        }
-        this.startSimulation();
-    }
-    
-    componentDidMount() {
-        showBrowserWindow(this.state);
-    }
-    
-    startSimulation() {
-        this.intervalId = setInterval(() => {
-            this.setState({
-                currentSimState: tick(this.state.currentSimState, simTimePerTick)
-            })
-        }, realTimePerTick);
-    }
-    
-    stopSimulation() {
-        clearInterval(this.intervalId);
-        this.intervalId = 0;
-    }
-    
-    render() {
-        return (
-            <div>
-                <CityscapeScene simState={this.state.currentSimState}/>
-                <div id="bottomContent">
-                    <ActionBar/>
-                </div>
-            </div>
-        )
     }
 }
 
@@ -216,8 +166,9 @@ class CityscapeScene extends Component {
     }
     
     initializeScene() {
-        this.groundPlane = new THREE.PlaneBufferGeometry( 100, 100 );
-        this.groundPlaneMesh = new THREE.Mesh( this.groundPlane, groundMaterial );
+        this.groundPlane = new THREE.Plane(new THREE.Vector3(0, 0, 1));
+        this.groundPlaneGeometry = new THREE.PlaneBufferGeometry( 100, 100 );
+        this.groundPlaneMesh = new THREE.Mesh( this.groundPlaneGeometry, groundMaterial );
         this.groundPlaneMesh.name = "groundPlane";
         this.groundPlaneMesh.position.z = -0.01;
         this.scene.add( this.groundPlaneMesh );
@@ -279,7 +230,7 @@ class CityscapeScene extends Component {
     render() {
         return (
             <div className="sceneContainer" ref={(mountTarget) => { this.mountTarget = mountTarget }}>
-                <SimStateGroupManager simState={this.props.simState} simStateGroup={this.simStateGroup} simStateSubgroups={this.simStateSubgroups}/>
+                <SimStateGroupManager simState={this.props.simState} simStateGroup={this.simStateGroup} simStateSubgroups={this.simStateSubgroups} realTimePerTick={this.props.realTimePerTick}/>
                 <CameraManager renderer={this.renderer} camera={this.camera} effectComposer={this.effectComposer} width={this.state.width} height={this.state.height}/>
             </div>
         )
@@ -307,13 +258,23 @@ class SimStateGroupManager extends Component {
     }
     
     createEdgeMesh(edgeId, edge, startNode, endNode) {
-        const edgeLine = new LineGeometry([[startNode.coordinate.x, startNode.coordinate.y], [endNode.coordinate.x, endNode.coordinate.y]]);
+        const offset = perpendicular(endNode.coordinate, startNode.coordinate, .15);
+        const edgeMeshGeometry = new LineGeometry([[startNode.coordinate.x + offset.x, startNode.coordinate.y + offset.y], [endNode.coordinate.x + offset.x, endNode.coordinate.y + offset.y]]);
 		const material = {
 			road: networkEdgeMaterial,
 			train: networkTrainEdgeMaterial
 		}[edge.typeId];
-        const edgeMesh = new THREE.Mesh(edgeLine, material)
+        const edgeMesh = new THREE.Mesh(edgeMeshGeometry, material);
         edgeMesh.name = edgeId;
+        
+        const edgeLineGeometry = new THREE.Geometry();
+        edgeLineGeometry.vertices.push(
+            new THREE.Vector3(startNode.coordinate.x + offset.x, startNode.coordinate.y + offset.y, 0),
+            new THREE.Vector3(endNode.coordinate.x + offset.x, endNode.coordinate.y + offset.y, 0),
+        )
+        const edgeLine = new THREE.Line( edgeLineGeometry, networkEdgeLineMaterial );
+        
+        edgeMesh.raycast = edgeLine.raycast;
         this.props.simStateSubgroups["networkEdgeGroup"].add(edgeMesh);
         this.state.meshCache.set(edgeId, edgeMesh);
         return edgeMesh;
@@ -393,14 +354,17 @@ class SimStateGroupManager extends Component {
                 const edge = network.edges[person.position.edgeId];
                 const endNode = network.nodes[edge.endId];
                 const startNode = network.nodes[edge.startId];
-                const coordinate = lerpCoordinates(startNode.coordinate, endNode.coordinate, person.position.distance);
+                const offset = perpendicular(endNode.coordinate, startNode.coordinate, .15);
+                const coordinate = lerpCoords(startNode.coordinate, endNode.coordinate, person.position.distance);
+                coordinate.x += offset.x;
+                coordinate.y += offset.y;
                 const personMesh = meshCache.has(personId) ? meshCache.get(personId) : this.createPersonMesh(personId);
                 if (personMesh.position.x !== coordinate.x || personMesh.position.y !== coordinate.y) {
                     if(personMesh.userData.tween) {
                         TWEEN.remove(personMesh.userData.tween);
                     }
                     personMesh.userData.tween = new TWEEN.Tween(personMesh.position)
-                        .to(coordinate, realTimePerTick)
+                        .to(coordinate, this.props.realTimePerTick)
                         .onComplete(() => personMesh.userData.tween = undefined)
                         .start();
                 }
@@ -427,9 +391,4 @@ function CameraManager(props) {
     return null;
 }
 
-export let mountCityscape = () => {
-    const reactContainer = document.createElement("div");
-    reactContainer.id = "reactContainer"
-    document.body.appendChild(reactContainer);
-    ReactDOM.render(<Cityscape/>, reactContainer);
-};
+export default CityscapeScene;

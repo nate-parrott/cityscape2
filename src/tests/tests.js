@@ -1,5 +1,5 @@
-import { tick } from './tick.js';
-import Network from './network';
+import { tick } from '../simulation/tick.js';
+import Network from '../simulation/network';
 import { testNetwork, simpleNetwork, littleLoopNetwork } from './testNetwork';
 import { defaultCity } from './city.js';
 

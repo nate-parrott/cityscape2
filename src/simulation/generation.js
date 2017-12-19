@@ -1,7 +1,7 @@
 import Constants from './constants.js';
 let { minDailyWage, maxDailyWage, minDailyRent, maxDailyRent, lifespanYears } = Constants;
 import { personName, apartmentName, businessName } from './generateNames.js';
-import { generateId } from './utils.js';
+import { generateId } from '../lib/utils.js';
 
 let jobs = {
   service_employee: {title: 'Service Employee', skills: {people: [0.4, 0.6], physical: [0.1, 0.4]}},

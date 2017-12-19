@@ -1,26 +1,27 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 
+import TransitToolset from './toolsets.jsx';
+
 class ActionBar extends Component {
     constructor(props) {
-        super(props)
+        super(props);
         this.state = {
             
         }
     }
     
     render() {
+        const Toolset = this.props.currentToolset;
         return (
             <div className="ActionBarContainer">
                 <div className='ToolBar'>
-                    <ToolButton/>
-                    <ToolButton/>
-                    <ToolButton/>
-                    <ToolButton/>
-                    <ToolButton/>
-                    <ToolButton/>
+                    <ToolButton toolset={TransitToolset} onSetToolset={this.props.onSetToolset}/>
                 </div>
-                <div className='ToolPalette'>
+                <div className='ToolsetPalette'>
+                    {this.props.currentToolset &&
+                        <Toolset/>
+                    }
                 </div>
             </div>
         );
@@ -29,9 +30,10 @@ class ActionBar extends Component {
 
 function ToolButton(props) {
     
-    
     return (
-        <div className="ToolButton">
+        <div className="ToolButton" onClick={(evt) => {
+            props.onSetToolset(props.toolset);
+        }}>
         </div>
     )
 }

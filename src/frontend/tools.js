@@ -53,6 +53,29 @@ const CreateEdgeTool = class extends Tool {
     }
 }
 
+const CreateBuildingTool = class extends Tool {
+    constructor(cityscape, options) {
+        super(cityscape, options);
+    }
+    
+    onClick(evt) {
+        this.setPointerVector(evt);
+        this.rayCaster.setFromCamera(this.pointerVector, this.scene.camera);
+        const edgeIntersects = this.rayCaster.intersectObjects(this.scene.simStateSubgroups.networkEdgeGroup.children);
+        
+        if (edgeIntersects.length > 0) {
+            this.activeEdge = edgeIntersects[0].object;
+        } else if(this.activeEdge) {
+            const groundIntersects = this.rayCaster.ray.intersectPlane(this.scene.groundPlane);
+            if (groundIntersects) {
+                const coordinate = snapToGrid(groundIntersects); //TODO, need to move next to edge
+                coordinate.rotation = 0; //TODO
+                const newBuildingId = this.cityscape.createRandomBuilding(this.options.typeId, this.activeEdge.name, coordinate);
+            }
+        }
+    }
+}
+
 const DisplayInfoTool = class extends Tool {
     constructor(cityscape) {
         super(cityscape);
@@ -72,4 +95,4 @@ const DisplayInfoTool = class extends Tool {
     }
 }
 
-module.exports = {CreateEdgeTool, DisplayInfoTool};
+module.exports = {CreateEdgeTool, CreateBuildingTool, DisplayInfoTool};

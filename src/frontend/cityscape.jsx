@@ -102,8 +102,8 @@ class Cityscape extends Component {
         }
     }
     
-    createRandomBuilding (typeId, coordinate) {
-        if (typeId && coordinate) {
+    createRandomBuilding (typeId, edgeId, coordinate) {
+        if (typeId && edgeId && coordinate) {
             const simState = this.state.currentSimState;
             const numBuildings = Object.keys(simState.map.buildings).length;
             const id = `b${numBuildings}`;
@@ -114,6 +114,7 @@ class Cityscape extends Component {
             if(buildingGenerators[typeId]) {
                 simState.map.buildings[id] = {
                     ...buildingGenerators[typeId](),
+                    edgeId,
                     coordinate,
                 };
                 return id;

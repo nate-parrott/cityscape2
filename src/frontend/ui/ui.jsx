@@ -22,7 +22,7 @@ class ActionBar extends React.PureComponent {
                 onSetToolset={this.props.onSetToolset}/>
         );
         return (
-            <div className="ActionBarContainer">
+            <div className="ActionBarContainer" data-active={!!this.props.currentToolset}>
                 <div className='ToolBar'>
                     {ToolsetButtons}
                 </div>

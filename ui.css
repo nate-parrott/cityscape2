@@ -25,6 +25,15 @@ html, body {
     user-select: none;
 }
 
+.ActionBarContainer {
+    transform: translate(0, 12em);
+    transition: transform .2s;
+}
+
+.ActionBarContainer[data-active="true"] {
+    transform: translate(0, 0);
+}
+
 .ToolBar {
     display: flex;
     flex-direction: row;

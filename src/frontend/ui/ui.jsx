@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 
-import TransitToolset from './toolsets.jsx';
+import toolsets from './toolsets.jsx';
 
-class ActionBar extends Component {
+class ActionBar extends React.PureComponent {
     constructor(props) {
         super(props);
         this.state = {
@@ -12,15 +12,23 @@ class ActionBar extends Component {
     }
     
     render() {
-        const Toolset = this.props.currentToolset;
+        const ToolsetPalette = (this.props.currentToolset) ? this.props.currentToolset.palette : undefined;
+        const ToolsetButtons = toolsets.map((toolset) =>
+            <ToolsetButton 
+                key={toolset.name} 
+                toolset={toolset} 
+                activeColor={toolset.color} 
+                active={this.props.currentToolset == toolset} 
+                onSetToolset={this.props.onSetToolset}/>
+        );
         return (
             <div className="ActionBarContainer">
                 <div className='ToolBar'>
-                    <ToolButton toolset={TransitToolset} onSetToolset={this.props.onSetToolset}/>
+                    {ToolsetButtons}
                 </div>
-                <div className='ToolsetPalette'>
+                <div className='ToolsetPaletteContainer'>
                     {this.props.currentToolset &&
-                        <Toolset/>
+                        <ToolsetPalette currentToolset={this.props.currentToolset} currentTool={this.props.currentTool} onSetTool={this.props.onSetTool}/>
                     }
                 </div>
             </div>
@@ -28,10 +36,12 @@ class ActionBar extends Component {
     }
 }
 
-function ToolButton(props) {
-    
+function ToolsetButton(props) {
+    const style={
+        background: props.active && props.activeColor,
+    }
     return (
-        <div className="ToolButton" onClick={(evt) => {
+        <div className="ToolsetButton" data-active={props.active} style={style} onClick={(evt) => {
             props.onSetToolset(props.toolset);
         }}>
         </div>

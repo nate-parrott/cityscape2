@@ -25,6 +25,7 @@ class Cityscape extends Component {
         
         this.setScene = this.setScene.bind(this);
         this.setToolset = this.setToolset.bind(this);
+        this.setTool = this.setTool.bind(this);
         this.onClick = this.onClick.bind(this);
         
         this.startSimulation();
@@ -52,7 +53,13 @@ class Cityscape extends Component {
     
     setToolset(toolset) {
         this.setState({
-            currentToolset: toolset,
+            currentToolset: (this.state.currentToolset === toolset) ? undefined : toolset,
+        });
+    }
+    
+    setTool(tool, options) {
+        this.setState({
+            currentTool: (this.state.currentTool instanceof tool) ? undefined : new tool(this, options),
         });
     }
     
@@ -127,7 +134,7 @@ class Cityscape extends Component {
             <div>
                 <CityscapeScene simState={this.state.currentSimState} realTimePerTick={realTimePerTick} ref={this.setScene}/>
                 <div id="bottomContent">
-                    <ActionBar currentToolset={this.state.currentToolset} onSetToolset={this.setToolset}/>
+                    <ActionBar currentToolset={this.state.currentToolset} currentTool={this.state.currentTool} onSetToolset={this.setToolset} onSetTool={this.setTool}/>
                 </div>
             </div>
         )

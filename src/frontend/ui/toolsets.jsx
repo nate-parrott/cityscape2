@@ -1,15 +1,63 @@
 import React, { Component } from 'react';
+import * as Tools from '../tools.js'
 
-class TransitToolset extends Component {
+class TransitPalette extends React.PureComponent {
     constructor(props) {
         super(props);
+        
+        this.actions = [
+        {
+            id: "road",
+            name: "Road",
+            tool: Tools.CreateRoadTool,
+            options: {},
+        }
+        ]
     }
     
     render() {
+        const ToolsetActions = this.actions.map((action) => 
+            <ActionCard
+                key={action.id}
+                toolset={this.props.currentToolset}
+                action={action}
+                active={this.props.currentTool instanceof action.tool} //TODO compare options also
+                onSetTool={this.props.onSetTool}/>
+        )
+        
         return (
-            <div>Hello World</div>
+            <div className="ToolsetPalette">
+                {ToolsetActions}
+            </div>
         )
     }
 }
 
-export default TransitToolset;
+function ActionCard(props) {
+    console.log(props);
+    const style={
+        color: props.toolset.color,
+        boxShadow: props.active && `0 1.2em 1.8em rgba(0, 0, 0, 0.1), inset 0 0 0 .125em ${props.toolset.color}`,
+        // border: props.active && `.125em solid ${props.toolset.color}`,
+    }
+    return (
+        <div className="ActionCard" data-active={props.active} style={style} onClick={(evt) => {
+            props.onSetTool(props.action.tool, props.action.options);
+        }}>
+            <div className="ActionImage"></div>
+            <div className="ActionDetails">
+                <div className="ActionName">{props.action.name}</div>
+            </div>
+        </div>
+    )
+}
+
+const toolsets = [
+{
+    name: "Transit",
+    color: "#EB5757",
+    palette: TransitPalette
+}
+]
+
+export default toolsets;

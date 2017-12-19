@@ -66,6 +66,9 @@ const networkTrainEdgeMaterial = new THREE.ShaderMaterial(LineBasicShader({
     thickness: 0.1
 }));
 networkTrainEdgeMaterial.name = "networkTrainEdge";
+const networkEdgeLineMaterial = new THREE.LineBasicMaterial({
+	color: roadColor,
+});
 const personMaterial = new THREE.MeshBasicMaterial({ color: personColor, name: "person" });
 
 const networkNodeGeometry = new THREE.BoxBufferGeometry( 0.6, 0.6, 0.1 );
@@ -256,13 +259,22 @@ class SimStateGroupManager extends Component {
     
     createEdgeMesh(edgeId, edge, startNode, endNode) {
         const offset = perpendicular(endNode.coordinate, startNode.coordinate, .15);
-        const edgeLine = new LineGeometry([[startNode.coordinate.x + offset.x, startNode.coordinate.y + offset.y], [endNode.coordinate.x + offset.x, endNode.coordinate.y + offset.y]]);
+        const edgeMeshGeometry = new LineGeometry([[startNode.coordinate.x + offset.x, startNode.coordinate.y + offset.y], [endNode.coordinate.x + offset.x, endNode.coordinate.y + offset.y]]);
 		const material = {
 			road: networkEdgeMaterial,
 			train: networkTrainEdgeMaterial
 		}[edge.typeId];
-        const edgeMesh = new THREE.Mesh(edgeLine, material)
+        const edgeMesh = new THREE.Mesh(edgeMeshGeometry, material);
         edgeMesh.name = edgeId;
+        
+        const edgeLineGeometry = new THREE.Geometry();
+        edgeLineGeometry.vertices.push(
+            new THREE.Vector3(startNode.coordinate.x + offset.x, startNode.coordinate.y + offset.y, 0),
+            new THREE.Vector3(endNode.coordinate.x + offset.x, endNode.coordinate.y + offset.y, 0),
+        )
+        const edgeLine = new THREE.Line( edgeLineGeometry, networkEdgeLineMaterial );
+        
+        edgeMesh.raycast = edgeLine.raycast;
         this.props.simStateSubgroups["networkEdgeGroup"].add(edgeMesh);
         this.state.meshCache.set(edgeId, edgeMesh);
         return edgeMesh;

@@ -31,18 +31,6 @@ import { mountCityscape } from './frontend/cityscape.jsx'
 //     }
 // }
 
-// city.interfaceState = {
-//     activeTool: new DisplayInfoTool(city),
-// }
-
-// const toolEventDispatcher = (evt) => {
-//     if (city.interfaceState.activeTool) {
-//         city.interfaceState.activeTool.onInteraction(evt);
-//     }
-// }
-
-// city.renderer.domElement.addEventListener( 'click', toolEventDispatcher);
-
 // const draggableObjects = [];
 // // const dragControls = new THREE.DragControls( draggableObjects, camera, renderer.domElement );
 // // dragControls.addEventListener( 'dragstart', function ( event ) { controls.enabled = false; } );

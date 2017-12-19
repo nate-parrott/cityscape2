@@ -5,6 +5,7 @@ import * as THREE from 'three';
 
 import { defaultCity } from '../tests/city.js';
 import { tick } from '../simulation/tick.js';
+import { newApartment, newWorkplace, newAgent } from '../simulation/generation.js';
 import { snapToGrid } from '../lib/utils.js'
 
 import CityscapeScene from './cityscapeScene.jsx';
@@ -23,6 +24,7 @@ const Tool = class {
         this.scene = this.cityscape.scene;
         
         this.rayCaster = new THREE.Raycaster();
+        this.rayCaster.linePrecision = .1;
         this.pointerVector = new THREE.Vector3();
     }
     
@@ -71,6 +73,25 @@ const CreateRoadTool = class extends Tool {
     }
 }
 
+const DisplayInfoTool = class extends Tool {
+    constructor(cityscape) {
+        super(cityscape);
+    }
+    
+    onClick(evt) {
+        this.setPointerVector(evt);
+        this.rayCaster.setFromCamera(this.pointerVector, this.scene.camera);
+        const nodeIntersects = this.rayCaster.intersectObjects(this.scene.simStateGroup.children, true);
+        
+        if (nodeIntersects.length > 0) {
+            // nodeIntersects[0].object.visible = false;
+            console.log(nodeIntersects[0].object);
+        }
+        
+        console.log(this.cityscape.state.currentSimState); // todo in lieu of actual save/load lol
+    }
+}
+
 class Cityscape extends Component {
     constructor(props) {
         super(props)
@@ -90,7 +111,7 @@ class Cityscape extends Component {
         this.scene.renderer.domElement.addEventListener('click', this.onClick);
         
         this.setState({
-            activeTool: new CreateRoadTool(this),
+            activeTool: new DisplayInfoTool(this),
         })
     }
     
@@ -144,6 +165,29 @@ class Cityscape extends Component {
             return id;
         } else {
             console.error(`Invalid createNode parameters: ${coordinate}`);
+        }
+    }
+    
+    createRandomBuilding (typeId, coordinate) {
+        if (typeId && coordinate) {
+            const simState = this.state.currentSimState;
+            const numBuildings = Object.keys(simState.map.buildings).length;
+            const id = `b${numBuildings}`;
+            const buildingGenerators = {
+                "home": newApartment,
+                "work": newWorkplace,
+            };
+            if(buildingGenerators[typeId]) {
+                simState.map.buildings[id] = {
+                    ...buildingGenerators[typeId](),
+                    coordinate,
+                };
+                return id;
+            } else {
+                console.error(`Invalid createRandomBuilding typeId: ${typeId}`);
+            }
+        } else {
+            console.error(`Invalid createRandomBuilding parameters: ${typeId}, ${coordinate}`);
         }
     }
     

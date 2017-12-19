@@ -24,7 +24,7 @@ const Tool = class {
 
 const CreateEdgeTool = class extends Tool {
     constructor(cityscape, options) {
-        super(cityscape);
+        super(cityscape, options);
     }
     
     onClick(evt) {

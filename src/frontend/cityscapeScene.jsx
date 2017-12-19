@@ -78,6 +78,8 @@ buildingGeometry.translate(0, 0.5, 0.5);
 const personGeometry = new THREE.DodecahedronBufferGeometry( 0.1, 0 );
 personGeometry.translate(0, 0, .05);
 
+const trainMaterial = new THREE.MeshBasicMaterial({ color: 'red', name: "train" });
+
 const buildingTypes = {
     "work": {
         material: commercialBuildingMaterial,
@@ -190,6 +192,7 @@ class CityscapeScene extends Component {
             networkEdgeGroup: this.createSimStateSubgroup("networkEdgeGroup"),
             buildingGroup: this.createSimStateSubgroup("buildingGroup"),
             personGroup: this.createSimStateSubgroup("personGroup"),
+						trainGroup: this.createSimStateSubgroup("trainGroup")
         };
         
         this.interfaceStateGroup = new THREE.Group();
@@ -295,6 +298,14 @@ class SimStateGroupManager extends Component {
         this.state.meshCache.set(personId, personMesh);
         return personMesh;
     }
+		
+		createTrainMesh(trainId, train) {
+      const trainMesh = new Mesh( personGeometry, trainMaterial );
+      trainMesh.name = trainId;
+			this.props.simStateSubgroups["trainGroup"].add(trainMesh);
+			this.state.meshCache.set(trainId, trainMesh);
+			return trainMesh;
+		}
     
     render() {
         if(this.props.simStateGroup && this.props.simStateSubgroups) {
@@ -302,6 +313,7 @@ class SimStateGroupManager extends Component {
             const buildings = this.props.simState.map.buildings;
             const people = this.props.simState.agents.people;
             const meshCache = this.state.meshCache;
+						const trains = this.props.simState.agents.trains;
             
             const networkEdgeGroup = this.props.simStateSubgroups["networkEdgeGroup"];
             
@@ -348,6 +360,25 @@ class SimStateGroupManager extends Component {
                 buildingMesh.scale.y = building.dimension.y;
                 buildingMesh.scale.z = building.dimension.z;
             }
+						
+						for(const trainId in trains) {
+							const train = trains[trainId];
+							const {scheduleIndex, progress} = train.state;
+							const sched = train.schedule[scheduleIndex];
+							let pos;
+							if (sched.type === 'stop') {
+								pos = network.nodes[sched.nodeId].coordinate;
+							} else {
+								const edgeId = sched.edgeId;
+								const {startId, endId} = network.edges[edgeId];
+								let fromCoord = network.nodes[startId].coordinate;
+								let toCoord = network.nodes[endId].coordinate;
+								pos = lerpCoords(fromCoord, toCoord, progress);
+							}
+							const trainMesh = meshCache.has(trainId) ? meshCache.get(trainId) : this.createTrainMesh(trainId, train);
+							trainMesh.position.x = pos.x;
+							trainMesh.position.y = pos.y;
+						}
             
             for(const personId in people) {
                 const person = people[personId];

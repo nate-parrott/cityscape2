@@ -57,11 +57,6 @@ export let transportTestCity = {
 				station2: {
 					typeId: 'trainStation', startId: 'nt3', endId: 'n3'
 				} // in actuality, we should add nodes for getting *off* the train
-			},
-			trains: {
-				train1: {
-					schedule: [{type: 'stop', nodeId: 'nt1'}, {type: 'go', edgeId: 't1'}, {type: 'go', edgeId: 't2'}, {type: 'stop', nodeId: 'nt3'}, {type: 'go', edgeId: 't3'}, {type: 'go', edgeId: 't4'}]
-				}
 			}
 		},
 		buildings: {
@@ -73,6 +68,12 @@ export let transportTestCity = {
 		}
 	},
 	agents: {
+		trains: {
+			train1: {
+				schedule: [{type: 'stop', nodeId: 'nt1'}, {type: 'go', edgeId: 't1'}, {type: 'go', edgeId: 't2'}, {type: 'stop', nodeId: 'nt3'}, {type: 'go', edgeId: 't3'}, {type: 'go', edgeId: 't4'}],
+				state: {scheduleIndex: 0, progress: 0}
+			}
+		},
 		people: {
 			p1: {
 				...newAgent(),

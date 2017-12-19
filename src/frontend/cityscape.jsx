@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 
 import { defaultCity } from '../tests/city.js';
+import { transportTestCity } from '../tests/transportTestCity.js';
+
 import { tick } from '../simulation/tick.js';
 import { newApartment, newWorkplace, newAgent } from '../simulation/generation.js';
 
@@ -19,7 +21,7 @@ class Cityscape extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            currentSimState: defaultCity,
+            currentSimState: transportTestCity,
         }
         
         this.setScene = this.setScene.bind(this);
@@ -31,7 +33,7 @@ class Cityscape extends Component {
     }
     
     componentDidMount() {
-        showBrowserWindow(this.state);
+        // showBrowserWindow(this.state);
         
         this.scene.renderer.domElement.addEventListener('click', this.onClick);
     }

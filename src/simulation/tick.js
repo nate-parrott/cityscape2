@@ -4,6 +4,7 @@ import Constants, { ticksPerYear } from './constants.js';
 let {realSecondsPerSimulatedHour, restDepletionPerHour, funDepletionPerHour, morningHours } = Constants;
 import { pick1 } from '../lib/utils.js';
 import Person from './person.js';
+import Train from './train.js';
 import { tickToTime } from './time.js';
 
 // COMMON DATA TYPES:
@@ -35,6 +36,10 @@ class City { // cities should be used for ONE tick only, and then discarded
     return this.json;
   }
   tickAgents(time) {
+		// tick trains:
+		for (let trainId in (this.agents.trains || {})) {
+			(new Train(trainId, this)).tick(time);
+		}
     // tick people:
     for (let id of Object.keys(this.agents.people)) {
       (new Person(id, this)).tick(time);

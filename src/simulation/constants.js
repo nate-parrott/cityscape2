@@ -11,6 +11,7 @@ let Constants = {
     // distance:
     walkingSpeedUnitsPerHour: 10,
     trainSpeedUnitsPerHour: 50,
+		trainStopHours: 0.2, // 1 second
     // people:
     lifespanYears: 80,
     schoolUntilAge: 20, // unimplemented

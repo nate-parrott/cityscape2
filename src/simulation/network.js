@@ -11,6 +11,12 @@ export default class Network {
       this.edgeIdsFromNodeId[edge.startId].push(edgeId);
     }
   }
+	edgeLength(edgeId) {
+		let {startId, endId} = this.edges[edgeId];
+		let startPos = this.nodes[startId].coordinate;
+		let endPos = this.nodes[endId].coordinate;
+		return dist(startPos, endPos);
+	}
   calcRoute(startCoord, startEdgeId, endCoord, endEdgeId) {
     // returns a list of edge ids, including the start and end:
     if (startEdgeId === endEdgeId) {

@@ -116,35 +116,4 @@ import { mountCityscape } from './frontend/cityscape.jsx'
 // // dragControls.addEventListener( 'dragstart', function ( event ) { controls.enabled = false; } );
 // // dragControls.addEventListener( 'dragend', function ( event ) { controls.enabled = true; } );
 
-
-// // Simulation Mutation
-// const createEdge = (typeId, startId, endId) => {
-//     if (typeId && startId && endId) {
-//         const numEdges = Object.keys(city.simState.map.network.edges).length;
-//         const id = `e${numEdges}`;
-//         city.simState.map.network.edges[id] = {
-//             typeId,
-//             startId,
-//             endId,
-//         };
-//         return id;
-//     } else {
-//         console.error(`Invalid createEdge parameters: ${typeId}, ${startId}, ${endId}`);
-//     }
-    
-// }
-
-// const createNode = (coordinate) => {
-//     if (coordinate) {
-//         const numNodes = Object.keys(city.simState.map.network.nodes).length;
-//         const id =`n${numNodes}`;
-//         city.simState.map.network.nodes[id] = {
-//             coordinate,
-//         };
-//         return id;
-//     } else {
-//         console.error(`Invalid createNode parameters: ${coordinate}`);
-//     }
-// }
-
 mountCityscape();

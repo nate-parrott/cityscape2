@@ -152,6 +152,20 @@ let closestPointToLineSegment = (v, w, p) => {
   return addCoords(v, coordTimesScalar(subCoords(w, v), t));
 }
 
+const perpendicular = (v1, v2, m) => {
+  const deltaVector = {
+      x: v1.x - v2.x,
+      y: v1.y - v2.y,
+  }
+  
+  const magnitude = Math.sqrt(deltaVector.x * deltaVector.x + deltaVector.y * deltaVector.y) / m;
+  
+  return {
+    x: deltaVector.y / magnitude,
+    y: -deltaVector.x / magnitude,
+  }
+}
+
 let pick1 = (list) => list[(Math.random() * list.length) | 0];
 
-module.exports = {astar, dist, lerp, lerpCoords, moveInDirection, distanceRatio, closestPointToLineSegment, pick1};
+module.exports = {astar, dist, lerp, lerpCoords, moveInDirection, distanceRatio, closestPointToLineSegment, pick1, perpendicular};

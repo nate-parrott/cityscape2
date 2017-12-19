@@ -6,7 +6,6 @@ import { tick } from '../simulation/tick.js';
 import { newApartment, newWorkplace, newAgent } from '../simulation/generation.js';
 
 import CityscapeScene from './cityscapeScene.jsx';
-import * as Tools from './tools.js'
 
 import { showBrowserWindow } from './ui/browser.jsx';
 import ActionBar from './ui/ui.jsx'
@@ -35,10 +34,6 @@ class Cityscape extends Component {
         showBrowserWindow(this.state);
         
         this.scene.renderer.domElement.addEventListener('click', this.onClick);
-        
-        this.setState({
-            currentTool: new Tools.DisplayInfoTool(this),
-        })
     }
     
     onClick(evt) {
@@ -57,9 +52,10 @@ class Cityscape extends Component {
         });
     }
     
-    setTool(tool, options) {
+    setTool(tool, options, action) {
         this.setState({
-            currentTool: (this.state.currentTool instanceof tool) ? undefined : new tool(this, options),
+            currentAction: (this.state.currentAction && this.state.currentAction.id === action.id) ? undefined : action,
+            currentTool: (this.state.currentAction && this.state.currentAction.id === action.id) ? undefined : new tool(this, options),
         });
     }
     
@@ -134,7 +130,7 @@ class Cityscape extends Component {
             <div>
                 <CityscapeScene simState={this.state.currentSimState} realTimePerTick={realTimePerTick} ref={this.setScene}/>
                 <div id="bottomContent">
-                    <ActionBar currentToolset={this.state.currentToolset} currentTool={this.state.currentTool} onSetToolset={this.setToolset} onSetTool={this.setTool}/>
+                    <ActionBar currentToolset={this.state.currentToolset} currentTool={this.state.currentTool} currentAction={this.state.currentAction} onSetToolset={this.setToolset} onSetTool={this.setTool}/>
                 </div>
             </div>
         )

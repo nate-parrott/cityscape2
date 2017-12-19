@@ -2,9 +2,10 @@ import * as THREE from 'three';
 import { snapToGrid } from '../lib/utils.js'
 
 const Tool = class {
-    constructor(cityscape) {
+    constructor(cityscape, options) {
         this.cityscape = cityscape;
         this.scene = this.cityscape.scene;
+        this.options = options;
         
         this.rayCaster = new THREE.Raycaster();
         this.rayCaster.linePrecision = .1;
@@ -21,8 +22,8 @@ const Tool = class {
     }
 }
 
-const CreateRoadTool = class extends Tool {
-    constructor(cityscape) {
+const CreateEdgeTool = class extends Tool {
+    constructor(cityscape, options) {
         super(cityscape);
     }
     
@@ -31,15 +32,11 @@ const CreateRoadTool = class extends Tool {
         this.rayCaster.setFromCamera(this.pointerVector, this.scene.camera);
         const nodeIntersects = this.rayCaster.intersectObjects(this.scene.simStateSubgroups.networkNodeGroup.children);
         
-        if(this.activeNodeMesh) {
-            
-        }
-        
         if (nodeIntersects.length > 0) {
             if(this.activeNodeMesh) {
                 const nodeB = nodeIntersects[0].object;
-                const newEdgeIdA = this.cityscape.createEdge("road", this.activeNodeMesh.name, nodeB.name);
-                const newEdgeIdB = this.cityscape.createEdge("road", nodeB.name, this.activeNodeMesh.name);
+                const newEdgeIdA = this.cityscape.createEdge(this.options.typeId, this.activeNodeMesh.name, nodeB.name);
+                const newEdgeIdB = this.cityscape.createEdge(this.options.typeId, nodeB.name, this.activeNodeMesh.name);
                 this.activeNodeMesh = undefined;
             } else {
                 this.activeNodeMesh = nodeIntersects[0].object; 
@@ -48,8 +45,8 @@ const CreateRoadTool = class extends Tool {
             const groundIntersects = this.rayCaster.ray.intersectPlane(this.scene.groundPlane);
             if (groundIntersects) {
                 const newNodeId = this.cityscape.createNode(snapToGrid(groundIntersects));
-                const newEdgeIdA = this.cityscape.createEdge("road", this.activeNodeMesh.name, newNodeId);
-                const newEdgeIdB = this.cityscape.createEdge("road", newNodeId, this.activeNodeMesh.name);
+                const newEdgeIdA = this.cityscape.createEdge(this.options.typeId, this.activeNodeMesh.name, newNodeId);
+                const newEdgeIdB = this.cityscape.createEdge(this.options.typeId, newNodeId, this.activeNodeMesh.name);
                 this.activeNodeMesh = undefined;
             }
         }
@@ -75,4 +72,4 @@ const DisplayInfoTool = class extends Tool {
     }
 }
 
-module.exports = {CreateRoadTool, DisplayInfoTool};
+module.exports = {CreateEdgeTool, DisplayInfoTool};

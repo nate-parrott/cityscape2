@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
+
+import SVG  from 'react-inlinesvg';
 
 import toolsets from './toolsets.jsx';
 
@@ -16,8 +17,7 @@ class ActionBar extends React.PureComponent {
         const ToolsetButtons = toolsets.map((toolset) =>
             <ToolsetButton 
                 key={toolset.name} 
-                toolset={toolset} 
-                activeColor={toolset.color} 
+                toolset={toolset}
                 active={this.props.currentToolset == toolset} 
                 onSetToolset={this.props.onSetToolset}/>
         );
@@ -28,7 +28,7 @@ class ActionBar extends React.PureComponent {
                 </div>
                 <div className='ToolsetPaletteContainer'>
                     {this.props.currentToolset &&
-                        <ToolsetPalette currentToolset={this.props.currentToolset} currentTool={this.props.currentTool} onSetTool={this.props.onSetTool}/>
+                        <ToolsetPalette currentToolset={this.props.currentToolset} currentTool={this.props.currentTool} currentAction={this.props.currentAction} onSetTool={this.props.onSetTool}/>
                     }
                 </div>
             </div>
@@ -38,12 +38,13 @@ class ActionBar extends React.PureComponent {
 
 function ToolsetButton(props) {
     const style={
-        background: props.active && props.activeColor,
+        background: props.active && props.toolset.color,
     }
     return (
         <div className="ToolsetButton" data-active={props.active} style={style} onClick={(evt) => {
             props.onSetToolset(props.toolset);
         }}>
+            <SVG src={`/webAssets/icons/${props.toolset.icon}`} />
         </div>
     )
 }

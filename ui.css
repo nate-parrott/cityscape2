@@ -39,10 +39,24 @@ html, body {
     cursor: pointer;
     background: rgba(196, 196, 196, 0.5);
     backdrop-filter: blur(4px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    line-height: 0;
+    transition: background .2s;
+}
+
+.ToolsetButton svg {
+    transition: fill .2s;
+    fill: #000;
 }
 
 .ToolsetButton[data-active="true"] {
     background: rgba(196, 196, 196, 1);
+}
+
+.ToolsetButton[data-active="true"] svg {
+    fill: #FFF;
 }
 
 .ToolsetPaletteContainer {
@@ -66,8 +80,9 @@ html, body {
     background: #FFFFFF;
     border-radius: .5em;
     cursor: pointer;
-    box-shadow: 0 1em 1.5em rgba(0, 0, 0, 0.1);
-    transition: box-shadow .5s, transform .5s;
+    box-shadow: 0 .25em .5em rgba(0, 0, 0, 0.1);
+    transition: box-shadow .2s, transform .2s;
+    margin-right: 1em;
 }
 
 .ActionCard[data-active="true"] {

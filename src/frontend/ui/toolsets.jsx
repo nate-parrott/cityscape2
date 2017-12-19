@@ -9,8 +9,18 @@ class TransitPalette extends React.PureComponent {
         {
             id: "road",
             name: "Road",
-            tool: Tools.CreateRoadTool,
-            options: {},
+            tool: Tools.CreateEdgeTool,
+            options: {
+                typeId: "road",
+            },
+        },
+        {
+            id: "rail",
+            name: "Rail",
+            tool: Tools.CreateEdgeTool,
+            options: {
+                typeId: "train",
+            },
         }
         ]
     }
@@ -21,7 +31,7 @@ class TransitPalette extends React.PureComponent {
                 key={action.id}
                 toolset={this.props.currentToolset}
                 action={action}
-                active={this.props.currentTool instanceof action.tool} //TODO compare options also
+                active={this.props.currentAction && this.props.currentAction.id == action.id}
                 onSetTool={this.props.onSetTool}/>
         )
         
@@ -34,7 +44,6 @@ class TransitPalette extends React.PureComponent {
 }
 
 function ActionCard(props) {
-    console.log(props);
     const style={
         color: props.toolset.color,
         boxShadow: props.active && `0 1.2em 1.8em rgba(0, 0, 0, 0.1), inset 0 0 0 .125em ${props.toolset.color}`,
@@ -42,7 +51,7 @@ function ActionCard(props) {
     }
     return (
         <div className="ActionCard" data-active={props.active} style={style} onClick={(evt) => {
-            props.onSetTool(props.action.tool, props.action.options);
+            props.onSetTool(props.action.tool, props.action.options, props.action);
         }}>
             <div className="ActionImage"></div>
             <div className="ActionDetails">
@@ -56,6 +65,7 @@ const toolsets = [
 {
     name: "Transit",
     color: "#EB5757",
+    icon: "ic_directions_black_24px.svg",
     palette: TransitPalette
 }
 ]

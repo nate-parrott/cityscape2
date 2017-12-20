@@ -312,8 +312,8 @@ class SimStateGroupManager extends Component {
             const network = this.props.simState.map.network;
             const buildings = this.props.simState.map.buildings;
             const people = this.props.simState.agents.people;
+			const trains = this.props.simState.agents.trains;
             const meshCache = this.state.meshCache;
-						const trains = this.props.simState.agents.trains;
             
             const networkEdgeGroup = this.props.simStateSubgroups["networkEdgeGroup"];
             
@@ -361,24 +361,31 @@ class SimStateGroupManager extends Component {
                 buildingMesh.scale.z = building.dimension.z;
             }
 						
-						for(const trainId in trains) {
-							const train = trains[trainId];
-							const {scheduleIndex, progress} = train.state;
-							const sched = train.schedule[scheduleIndex];
-							let pos;
-							if (sched.type === 'stop') {
-								pos = network.nodes[sched.nodeId].coordinate;
-							} else {
-								const edgeId = sched.edgeId;
-								const {startId, endId} = network.edges[edgeId];
-								let fromCoord = network.nodes[startId].coordinate;
-								let toCoord = network.nodes[endId].coordinate;
-								pos = lerpCoords(fromCoord, toCoord, progress);
-							}
-							const trainMesh = meshCache.has(trainId) ? meshCache.get(trainId) : this.createTrainMesh(trainId, train);
-							trainMesh.position.x = pos.x;
-							trainMesh.position.y = pos.y;
-						}
+			for(const trainId in trains) {
+				const train = trains[trainId];
+				const {scheduleIndex, progress} = train.state;
+				const sched = train.schedule[scheduleIndex];
+				let pos;
+				if (sched.type === 'stop') {
+					pos = network.nodes[sched.nodeId].coordinate;
+				} else {
+					const edgeId = sched.edgeId;
+					const {startId, endId} = network.edges[edgeId];
+					let fromCoord = network.nodes[startId].coordinate;
+					let toCoord = network.nodes[endId].coordinate;
+					pos = lerpCoords(fromCoord, toCoord, progress);
+				}
+				const trainMesh = meshCache.has(trainId) ? meshCache.get(trainId) : this.createTrainMesh(trainId, train);
+				if (trainMesh.position.x !== pos.x || trainMesh.position.y !== pos.y) {
+				    if(trainMesh.userData.tween) {
+                        TWEEN.remove(trainMesh.userData.tween);
+                    }
+                    trainMesh.userData.tween = new TWEEN.Tween(trainMesh.position)
+                        .to(pos, this.props.realTimePerTick)
+                        .onComplete(() => trainMesh.userData.tween = undefined)
+                        .start();
+				}
+			}
             
             for(const personId in people) {
                 const person = people[personId];
@@ -390,6 +397,19 @@ class SimStateGroupManager extends Component {
                 coordinate.x += offset.x;
                 coordinate.y += offset.y;
                 const personMesh = meshCache.has(personId) ? meshCache.get(personId) : this.createPersonMesh(personId);
+                if (person.onTrainId) {
+                    if (personMesh.visible) {
+                        setTimeout(() => {
+                            personMesh.visible = false;
+                        }, this.props.realTimePerTick);
+                    }
+                } else {
+                    if (!personMesh.visible) {
+                        setTimeout(() => {
+                            personMesh.visible = true;
+                        }, this.props.realTimePerTick);
+                    }
+                }
                 if (personMesh.position.x !== coordinate.x || personMesh.position.y !== coordinate.y) {
                     if(personMesh.userData.tween) {
                         TWEEN.remove(personMesh.userData.tween);

@@ -78,7 +78,7 @@ let BookmarksBar = ({bookmarks, onNavigate}) => {
 class FloatingWindow extends Component {
 	constructor(props) {
 		super(props);
-		this.state = {x: 100, y: 100};
+		this.state = {x: 256, y: 256};
 		this.posAtDragStart = null;
 		
 		this.mouseDown = this.mouseDown.bind(this);

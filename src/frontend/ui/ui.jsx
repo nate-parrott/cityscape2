@@ -13,7 +13,10 @@ class CityscapeUI extends React.PureComponent {
         return (
             <div>
                 <div id="topContent">
-                    <Narrator/>
+                    <Narrator title="Mass Transit" color="#EB5757">
+                        <p className="NarratorParagraph">An effective transit network is the backbone of a dense, efficient city.</p>
+                        <p className="NarratorInstruction">Add a station to the subway line below</p>
+                    </Narrator>
                 </div>
                 <div id="bottomContent">
                     <ActionBar 
@@ -34,12 +37,15 @@ class Narrator extends React.PureComponent {
     }
     
     render() {
+        const accentBarStyle = {
+            background: this.props.color,
+        }
+        
         return (
             <div className="NarratorContainer">
                 <div className="NarratorContent">
-                    <h1 className="NarratorTitle">Mass Transit</h1>
-                    <p className="NarratorParagraph">An effective transit network is the backbone of a dense, efficient city.</p>
-                    <p className="NarratorInstruction">Add a station to the subway line below</p>
+                    <h1 className="NarratorTitle"><div className="NarratorAccentBar" style={accentBarStyle} />{this.props.title}</h1>
+                    {this.props.children}
                 </div>
             </div>
         )

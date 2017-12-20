@@ -71,8 +71,10 @@ export let newAgent = (ageFraction) => {
 		name: personName(),
     position: {
       edgeId: "e000",
-      distance: Math.random()
+      distance: Math.random(),
     },
+		onTrainId: null,
+		exitTrainAtNodeId: null,
 		currentBuildingId: null,
 		satisfaction: {rest: 1, fun: 0.5},
 		skills: generateSkillSet(),

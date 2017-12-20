@@ -5,7 +5,7 @@ export let transportTestCity = {
 		network: {
 			nodes: {
 				n4: {
-					coordinate: {x: -5, y: 0} // building is here
+					coordinate: {x: -10, y: 0} // building is here
 				},
 				n3: {
 					coordinate: {x: -4, y: 0} // train stop is here
@@ -14,7 +14,7 @@ export let transportTestCity = {
 					coordinate: {x: 4, y: 0} // embarking train stop is here
 				},
 				n1: {
-					coordinate: {x: 5, y: 0} // start point
+					coordinate: {x: 10, y: 0} // start point
 				},
 				nt1: {
 					coordinate: {x: 4, y: 0} // embarking station (connects to n2)
@@ -62,7 +62,7 @@ export let transportTestCity = {
 		buildings: {
 			b1: {
 				...newWorkplace(),
-				coordinate: {x: -5, y: 0, rotation: 0},
+				coordinate: {x: -10, y: 0, rotation: 0},
 				edgeId: 'e3'
 			}
 		}

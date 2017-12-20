@@ -4,16 +4,47 @@ const { walkingSpeedUnitsPerHour, trainSpeedUnitsPerHour } = Constants;
 let maxTransitSpeed = trainSpeedUnitsPerHour;
 
 export default class Network {
-  constructor(net) {
+  constructor(net, trains) {
     this.edges = net.edges;
     this.nodes = net.nodes;
+		this.trains = trains;
+		this.makeEdgesForTrains();
     this.edgeIdsFromNodeId = {};
-    for (let edgeId of Object.keys(this.edges)) {
+    for (let edgeId in this.edges) {
       let edge = this.edges[edgeId];
-      if (!this.edgeIdsFromNodeId[edge.startId]) this.edgeIdsFromNodeId[edge.startId] = [];
-      this.edgeIdsFromNodeId[edge.startId].push(edgeId);
+			if (edge.typeId !== 'train') { // people can't be routed on train edges
+	      if (!this.edgeIdsFromNodeId[edge.startId]) this.edgeIdsFromNodeId[edge.startId] = [];
+	      this.edgeIdsFromNodeId[edge.startId].push(edgeId);
+			}
     }
   }
+	makeEdgesForTrains() {
+		let id = 0;
+		for (let trainId in this.trains) {
+			let train = this.trains[trainId];
+			let schedule = train.schedule;
+			for (let startIdx=0; startIdx < schedule.length; startIdx++) {
+				if (schedule[startIdx].type === 'stop') {
+					let hours = 0;
+					for (let offset=1; offset < schedule.length; offset++) {
+						let endIdx = (startIdx + offset) % schedule.length;
+						if (schedule[endIdx].type === 'stop') {
+							// create an edge:
+							let edgeId = 'train_edge_' + (id++);
+							let startId = schedule[startIdx].nodeId;
+							let endId = schedule[endIdx].nodeId;
+							this.edges[edgeId] = {typeId: 'trainTrip', trainId, startId, endId, hours};
+						} else if (schedule[endIdx].type === 'go') {
+							hours += this.edgeLength(schedule[endIdx].edgeId) / trainSpeedUnitsPerHour;
+						}
+					}
+				}
+			}
+		}
+	}
+	edgeIdForGettingOffTrain(nodeId) {
+		return this.edgeIdsFromNodeId[nodeId].filter((id) => this.edges[id].type !== 'train')[0];
+	}
 	edgeLength(edgeId) {
 		let {startId, endId} = this.edges[edgeId];
 		let startPos = this.nodes[startId].coordinate;
@@ -22,10 +53,10 @@ export default class Network {
 	}
 	costForEdge(edgeId) {
 		let edge = this.edges[edgeId];
-		let speed = {
-			train: trainSpeedUnitsPerHour
-		}[edge.typeId] || walkingSpeedUnitsPerHour;
-		let cost = this.edgeLength(edgeId) / speed;
+		if (edge.hours) {
+			return edge.hours;
+		}
+		let cost = this.edgeLength(edgeId) / walkingSpeedUnitsPerHour;
 		return cost;
 	}
   calcRoute(startCoord, startEdgeId, endCoord, endEdgeId) {
@@ -62,7 +93,7 @@ export default class Network {
     }
   }
   moveToward(startEdgeId, startCoord, destEdgeId, destCoord, budget) {
-    // returns {newPosition, remainingBudget, atDestination}
+    // returns {newPosition, remainingBudget, atDestination, onTrainId, exitTrainAtNodeId}
     startCoord = this.nearestCoordinate(startCoord, startEdgeId);
     destCoord = this.nearestCoordinate(destCoord, destEdgeId);
     
@@ -84,6 +115,18 @@ export default class Network {
     
     for (let i=0; i < routeEdges.length; i++) {
       edgeId = routeEdges[i];
+			let edge = this.edges[edgeId];
+			if (edge.typeId === 'trainTrip') {
+				// we'll need to wait for, or get on, the train:
+				let trainId = edge.trainId;
+				let stopsDuringPrevTick = this.trains[trainId].stopsDuringPrevTick || [];
+				let canBoard = stopsDuringPrevTick.indexOf(edge.startId) !== -1;
+				if (canBoard) {
+					return {newPosition: {edgeId, distance: 0}, remainingBudget: 0, atDestination: false, onTrainId: edge.trainId, exitTrainAtNodeId: edge.endId};
+				} else {
+					return {newPosition: {edgeId, distance: 0}, remainingBudget: 0, atDestination: false};
+				}
+			}
       
       let maxTravelDist;
       let endOfEdgeCoord = this.nodes[this.edges[edgeId].endId].coordinate;

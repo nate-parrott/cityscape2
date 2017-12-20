@@ -25,7 +25,7 @@ class City { // cities should be used for ONE tick only, and then discarded
     this.map = json.map;
     this.agents = json.agents;
     this.simulation = json.simulation;
-    this.network = new Network(this.map.network);
+    this.network = new Network(this.map.network, json.agents.trains);
 		this.jobs = {};
   }
   tick(time) {

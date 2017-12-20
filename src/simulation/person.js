@@ -71,17 +71,40 @@ export default class Person { // person objects should modify their internal jso
     if (action.actionId === 'travel') {
 			// 🏃 🏃‍♀️ 🏃 🏃‍♀️ TRAVEL 🏃 🏃‍♀️ 🏃 🏃‍♀️
 			this.json.currentBuildingId = null;
-			let kTimeToDistance = walkingSpeedUnitsPerHour / realSecondsPerSimulatedHour;
-			let walkingBudget = budget * kTimeToDistance;
-      let dest = this.city.map.buildings[action.buildingId];
-      let fromCoord = this.city.network.coord(this.json.position.edgeId, this.json.position.distance);
-      let {newPosition, remainingBudget, atDestination} = this.city.network.moveToward(this.json.position.edgeId, fromCoord, dest.edgeId, dest.coordinate, walkingBudget);
-			remainingBudget /= kTimeToDistance;
-      this.json.position = newPosition;
-			if (atDestination) {
-				this.json.currentBuildingId = action.buildingId;
+			
+			if (this.json.onTrainId) {
+				// if on a train, check if it's time to get off:
+				let train = this.city.agents.trains[this.json.onTrainId];
+				if ((train.stopsDuringPrevTick || []).indexOf(this.json.exitTrainAtNodeId) !== -1) {
+					// we can get off the train!
+					// find an edge that isn't a train:
+					let node = this.city.network.nodes[this.json.exitTrainAtNodeId];
+					let edgeId = this.city.network.edgeIdForGettingOffTrain(this.json.exitTrainAtNodeId);
+					this.json.position = {edgeId: edgeId, distance: 0};
+					this.json.exitTrainAtNodeId = null;
+					this.json.onTrainId = null;
+				}
 			}
-      return {remainingBudget, isFinished: atDestination};
+			if (!this.json.onTrainId) {
+				let kTimeToDistance = walkingSpeedUnitsPerHour / realSecondsPerSimulatedHour;
+				let walkingBudget = budget * kTimeToDistance;
+	      let dest = this.city.map.buildings[action.buildingId];
+	      let fromCoord = this.city.network.coord(this.json.position.edgeId, this.json.position.distance);
+	      let {newPosition, remainingBudget, atDestination, onTrainId, exitTrainAtNodeId} = this.city.network.moveToward(this.json.position.edgeId, fromCoord, dest.edgeId, dest.coordinate, walkingBudget);
+				remainingBudget /= kTimeToDistance;
+      
+				// update json:
+				this.json.position = newPosition;
+				this.json.onTrainId = onTrainId;
+				this.json.exitTrainAtNodeId = exitTrainAtNodeId;
+			
+				if (atDestination) {
+					this.json.currentBuildingId = action.buildingId;
+				}
+	      return {remainingBudget, isFinished: atDestination};
+			} else {
+				return {remainingBudget: 0, isFinished: false};
+			}
     } else if (action.actionId === 'work') {
 			// 👩‍💻 👨‍🏭 💂 👨‍🌾 WORK 👩‍💻 👨‍🏭 💂 👨‍🌾
 			let timeRemaining = action.hoursRemaining * realSecondsPerSimulatedHour;

@@ -60,7 +60,7 @@ export let transportTestCity = {
 			}
 		},
 		buildings: {
-			b1: {
+			b0: {
 				...newWorkplace(),
 				coordinate: {x: -10, y: 0, rotation: 0},
 				edgeId: 'e3'
@@ -82,7 +82,7 @@ export let transportTestCity = {
 		      distance: 0.3
 		    },
 				actions: [
-					{actionId: 'travel', buildingId: 'b1'}
+					{actionId: 'travel', buildingId: 'b0'}
 				]
 			}
 		}

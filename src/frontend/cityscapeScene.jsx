@@ -45,6 +45,7 @@ const trackColor = 0xB5B5B5;
 const residentialColor = 0xB3D28A;
 const commercialColor = 0xADD1FC;
 const personColor = 0xB5A8BA;
+const trainColor = 0xEB5757;
 
 const groundMaterial = new THREE.MeshBasicMaterial( {
     color: groundColor,
@@ -78,7 +79,7 @@ buildingGeometry.translate(0, 0.5, 0.5);
 const personGeometry = new THREE.DodecahedronBufferGeometry( 0.1, 0 );
 personGeometry.translate(0, 0, .05);
 
-const trainMaterial = new THREE.MeshBasicMaterial({ color: 'red', name: "train" });
+const trainMaterial = new THREE.MeshBasicMaterial({ color: trainColor, name: "train" });
 
 const buildingTypes = {
     "work": {
@@ -299,13 +300,13 @@ class SimStateGroupManager extends Component {
         return personMesh;
     }
 		
-		createTrainMesh(trainId, train) {
-      const trainMesh = new Mesh( personGeometry, trainMaterial );
-      trainMesh.name = trainId;
-			this.props.simStateSubgroups["trainGroup"].add(trainMesh);
-			this.state.meshCache.set(trainId, trainMesh);
-			return trainMesh;
-		}
+	createTrainMesh(trainId, train) {
+        const trainMesh = new Mesh( personGeometry, trainMaterial );
+        trainMesh.name = trainId;
+		this.props.simStateSubgroups["trainGroup"].add(trainMesh);
+		this.state.meshCache.set(trainId, trainMesh);
+		return trainMesh;
+	}
     
     render() {
         if(this.props.simStateGroup && this.props.simStateSubgroups) {

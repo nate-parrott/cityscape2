@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { snapToGrid } from '../lib/utils.js'
+import { snapToGrid, closestPointToLineSegment } from '../lib/utils.js'
 
 const Tool = class {
     constructor(cityscape, options) {
@@ -68,9 +68,18 @@ const CreateBuildingTool = class extends Tool {
         } else if(this.activeEdge) {
             const groundIntersects = this.rayCaster.ray.intersectPlane(this.scene.groundPlane);
             if (groundIntersects) {
-                const coordinate = snapToGrid(groundIntersects); //TODO, need to move next to edge
-                coordinate.rotation = 0; //TODO
-                const newBuildingId = this.cityscape.createRandomBuilding(this.options.typeId, this.activeEdge.name, coordinate);
+                const simState = this.cityscape.state.currentSimState;
+                const edge = simState.map.network.edges[this.activeEdge.name];
+                const startNode = simState.map.network.nodes[edge.startId];
+                const endNode = simState.map.network.nodes[edge.endId];
+                const buildingPosition = snapToGrid(groundIntersects);
+                const edgeCoordinate = closestPointToLineSegment(startNode.coordinate, endNode.coordinate, buildingPosition);
+                const toEdgeVector = new THREE.Vector2(buildingPosition.x - edgeCoordinate.x, buildingPosition.y - edgeCoordinate.y);
+                toEdgeVector.normalize();
+                buildingPosition.rotation = toEdgeVector.angle() - Math.PI/2;
+                buildingPosition.x = buildingPosition.x - toEdgeVector.x * .5;
+                buildingPosition.y = buildingPosition.y - toEdgeVector.y * .5;
+                const newBuildingId = this.cityscape.createRandomBuilding(this.options.typeId, this.activeEdge.name, buildingPosition);
             }
         }
     }

@@ -33,7 +33,7 @@ class Cityscape extends Component {
     }
     
     componentDidMount() {
-        // showBrowserWindow(this.state);
+        showBrowserWindow(this.state);
         
         this.scene.renderer.domElement.addEventListener('click', this.onClick);
     }

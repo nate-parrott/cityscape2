@@ -78,7 +78,8 @@ const buildingGeometry = new THREE.BoxBufferGeometry( 1.0, 1.0, 1.0 );
 buildingGeometry.translate(0, 0.5, 0.5);
 const personGeometry = new THREE.DodecahedronBufferGeometry( 0.1, 0 );
 personGeometry.translate(0, 0, .05);
-const trainGeometry = new THREE.BoxBufferGeometry( .5, .15, .15 )
+const trainGeometry = new THREE.BoxBufferGeometry( .75, .2, .2 );
+trainGeometry.translate(0, 0, .1);
 
 const trainMaterial = new THREE.MeshBasicMaterial({ color: trainColor, name: "train" });
 

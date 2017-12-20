@@ -10,7 +10,7 @@ import { newApartment, newWorkplace, newAgent } from '../simulation/generation.j
 import CityscapeScene from './cityscapeScene.jsx';
 
 import { showBrowserWindow } from './ui/browser.jsx';
-import ActionBar from './ui/ui.jsx'
+import CityscapeUI from './ui/ui.jsx'
 
 // Initialize Constants
 
@@ -131,10 +131,16 @@ class Cityscape extends Component {
     render() {
         return (
             <div>
-                <CityscapeScene simState={this.state.currentSimState} realTimePerTick={realTimePerTick} ref={this.setScene}/>
-                <div id="bottomContent">
-                    <ActionBar currentToolset={this.state.currentToolset} currentTool={this.state.currentTool} currentAction={this.state.currentAction} onSetToolset={this.setToolset} onSetTool={this.setTool}/>
-                </div>
+                <CityscapeScene 
+                    simState={this.state.currentSimState} 
+                    realTimePerTick={realTimePerTick} 
+                    ref={this.setScene}/>
+                <CityscapeUI 
+                    currentToolset={this.state.currentToolset} 
+                    currentTool={this.state.currentTool} 
+                    currentAction={this.state.currentAction} 
+                    onSetToolset={this.setToolset} 
+                    onSetTool={this.setTool}/>
             </div>
         )
     }

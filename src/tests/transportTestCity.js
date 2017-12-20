@@ -62,7 +62,7 @@ export let transportTestCity = {
 		buildings: {
 			b0: {
 				...newWorkplace(),
-				coordinate: {x: -10, y: 0, rotation: 0},
+				coordinate: {x: -10, y: .5, rotation: 0},
 				edgeId: 'e3'
 			}
 		}

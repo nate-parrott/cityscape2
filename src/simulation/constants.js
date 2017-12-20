@@ -29,7 +29,7 @@ let Constants = {
     basicNeedsPurchaseTime: 1,
     basicNeedsCost: 1,
     // jobs:
-    findNewJobEveryNYears: 5,
+    findNewJobEveryNYears: 2,
     minDailyWage: 2,
     maxDailyWage: 10,
     salaryDropForFilledPositions: 0.2,

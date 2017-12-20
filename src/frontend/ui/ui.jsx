@@ -4,6 +4,48 @@ import SVG  from 'react-inlinesvg';
 
 import toolsets from './toolsets.jsx';
 
+class CityscapeUI extends React.PureComponent {
+    constructor(props) {
+        super(props);
+    }
+    
+    render() {
+        return (
+            <div>
+                <div id="topContent">
+                    <Narrator/>
+                </div>
+                <div id="bottomContent">
+                    <ActionBar 
+                        currentToolset={this.props.currentToolset} 
+                        currentTool={this.props.currentTool} 
+                        currentAction={this.props.currentAction} 
+                        onSetToolset={this.props.onSetToolset} 
+                        onSetTool={this.props.onSetTool}/>
+                </div>
+            </div>
+        )
+    }
+}
+
+class Narrator extends React.PureComponent {
+    constructor(props) {
+        super(props);
+    }
+    
+    render() {
+        return (
+            <div className="NarratorContainer">
+                <div className="NarratorContent">
+                    <h1 className="NarratorTitle">Mass Transit</h1>
+                    <p className="NarratorParagraph">An effective transit network is the backbone of a dense, efficient city.</p>
+                    <p className="NarratorInstruction">Add a station to the subway line below</p>
+                </div>
+            </div>
+        )
+    }
+}
+
 class ActionBar extends React.PureComponent {
     constructor(props) {
         super(props);
@@ -49,5 +91,5 @@ function ToolsetButton(props) {
     )
 }
 
-export default ActionBar;
+export default CityscapeUI;
 

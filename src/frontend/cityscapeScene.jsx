@@ -78,6 +78,7 @@ const buildingGeometry = new THREE.BoxBufferGeometry( 1.0, 1.0, 1.0 );
 buildingGeometry.translate(0, 0.5, 0.5);
 const personGeometry = new THREE.DodecahedronBufferGeometry( 0.1, 0 );
 personGeometry.translate(0, 0, .05);
+const trainGeometry = new THREE.BoxBufferGeometry( .5, .15, .15 )
 
 const trainMaterial = new THREE.MeshBasicMaterial({ color: trainColor, name: "train" });
 
@@ -301,7 +302,7 @@ class SimStateGroupManager extends Component {
     }
 		
 	createTrainMesh(trainId, train) {
-        const trainMesh = new Mesh( personGeometry, trainMaterial );
+        const trainMesh = new Mesh( trainGeometry, trainMaterial );
         trainMesh.name = trainId;
 		this.props.simStateSubgroups["trainGroup"].add(trainMesh);
 		this.state.meshCache.set(trainId, trainMesh);
@@ -356,7 +357,8 @@ class SimStateGroupManager extends Component {
                 const buildingMesh = meshCache.has(buildingId) ? meshCache.get(buildingId) : this.createBuildingMesh(buildingId, building);
                 buildingMesh.position.x = building.coordinate.x;
                 buildingMesh.position.y = building.coordinate.y;
-                buildingMesh.setRotationFromAxisAngle(this.zAxis, building.coordinate.rotation);
+                // buildingMesh.setRotationFromAxisAngle(this.zAxis, building.coordinate.rotation);
+                buildingMesh.rotation.z = building.coordinate.rotation;
                 buildingMesh.scale.x = building.dimension.x;
                 buildingMesh.scale.y = building.dimension.y;
                 buildingMesh.scale.z = building.dimension.z;
@@ -381,12 +383,35 @@ class SimStateGroupManager extends Component {
 				}
 				const trainMesh = meshCache.has(trainId) ? meshCache.get(trainId) : this.createTrainMesh(trainId, train);
 				if (trainMesh.position.x !== coordinate.x || trainMesh.position.y !== coordinate.y) {
-				    if(trainMesh.userData.tween) {
-                        TWEEN.remove(trainMesh.userData.tween);
+				    if(trainMesh.userData.posTween) {
+                        TWEEN.remove(trainMesh.userData.posTween);
                     }
-                    trainMesh.userData.tween = new TWEEN.Tween(trainMesh.position)
+                    if(trainMesh.userData.rotTween) {
+                        TWEEN.remove(trainMesh.userData.rotTween);
+                    }
+                    trainMesh.userData.posTween = new TWEEN.Tween(trainMesh.position)
                         .to(coordinate, this.props.realTimePerTick)
-                        .onComplete(() => trainMesh.userData.tween = undefined)
+                        .onComplete(() => trainMesh.userData.posTween = undefined)
+                        .start();
+
+                    const forwardVector = new THREE.Vector2(coordinate.x - trainMesh.position.x, coordinate.y - trainMesh.position.y);
+                    const initialQuaternion = new THREE.Quaternion();
+                    initialQuaternion.copy(trainMesh.quaternion);
+                    const finalQuaternion = new THREE.Quaternion();
+                    finalQuaternion.setFromAxisAngle( this.zAxis, forwardVector.angle() );
+                    const interpolationQuaternion = new THREE.Quaternion();
+                    interpolationQuaternion.copy(initialQuaternion);
+                    trainMesh.userData.rotT = 0;
+                    
+                    trainMesh.userData.rotTween = new TWEEN.Tween(trainMesh.userData)
+                        .to({
+                            rotT: 1
+                        }, 100)
+                        .onUpdate(() => {
+                            THREE.Quaternion.slerp(initialQuaternion, finalQuaternion, interpolationQuaternion, trainMesh.userData.rotT);
+                            trainMesh.setRotationFromQuaternion(interpolationQuaternion);
+                        })
+                        .onComplete(() => trainMesh.userData.rotTween = undefined)
                         .start();
 				}
 			}

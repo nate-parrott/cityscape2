@@ -366,23 +366,26 @@ class SimStateGroupManager extends Component {
 				const train = trains[trainId];
 				const {scheduleIndex, progress} = train.state;
 				const sched = train.schedule[scheduleIndex];
-				let pos;
+				let coordinate;
 				if (sched.type === 'stop') {
-					pos = network.nodes[sched.nodeId].coordinate;
+					coordinate = network.nodes[sched.nodeId].coordinate;
 				} else {
 					const edgeId = sched.edgeId;
-					const {startId, endId} = network.edges[edgeId];
-					let fromCoord = network.nodes[startId].coordinate;
-					let toCoord = network.nodes[endId].coordinate;
-					pos = lerpCoords(fromCoord, toCoord, progress);
+					const edge = network.edges[edgeId];
+					const endNode = network.nodes[edge.endId];
+                    const startNode = network.nodes[edge.startId];
+					const offset = perpendicular(endNode.coordinate, startNode.coordinate, .15);
+					coordinate = lerpCoords(startNode.coordinate, endNode.coordinate, progress);
+					coordinate.x += offset.x;
+                    coordinate.y += offset.y;
 				}
 				const trainMesh = meshCache.has(trainId) ? meshCache.get(trainId) : this.createTrainMesh(trainId, train);
-				if (trainMesh.position.x !== pos.x || trainMesh.position.y !== pos.y) {
+				if (trainMesh.position.x !== coordinate.x || trainMesh.position.y !== coordinate.y) {
 				    if(trainMesh.userData.tween) {
                         TWEEN.remove(trainMesh.userData.tween);
                     }
                     trainMesh.userData.tween = new TWEEN.Tween(trainMesh.position)
-                        .to(pos, this.props.realTimePerTick)
+                        .to(coordinate, this.props.realTimePerTick)
                         .onComplete(() => trainMesh.userData.tween = undefined)
                         .start();
 				}

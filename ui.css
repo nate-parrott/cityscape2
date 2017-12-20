@@ -35,6 +35,7 @@ html, body {
     color: #FFF;
     display: flex;
     position: relative;
+    max-width: 45em;
 }
 
 .NarratorTitle {

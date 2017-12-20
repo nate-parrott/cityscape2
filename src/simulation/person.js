@@ -41,6 +41,7 @@ export default class Person { // person objects should modify their internal jso
 	}
 	decideNextActions() {
 		// it's the big deal!
+		
 		let job = this.getJob();
 		if (this.city.isMorning() && job) {
 			// go to work:
@@ -54,10 +55,19 @@ export default class Person { // person objects should modify their internal jso
 			} else {
 				return [{actionId: 'travel', buildingId: this.json.homeId}];
 			}
-			return [{actionId}]
 		} else if (this.json.satisfaction.rest < restThresholdToSleepOnStreet) {
 			// sleep right here
 			return [{actionId: 'sleep', atHome: false, hoursRemaining: sleepMaxDuration, wakeupHour}];
+		} else if (!this.json.homeId) {
+			// find home if homeless
+			// TODO: stop spamming tweets
+			this.findHome();
+			return [];
+		} else if (!this.json.workplaceId) {
+			// find job if jobless
+			// TODO: stop spamming tweets
+			this.findJob();
+			return [];
 		} else if (this.json.homeId && this.json.currentBuildingId !== this.json.homeId) {
 			// go home
 			return [{actionId: 'travel', buildingId: this.json.homeId}];
@@ -142,7 +152,7 @@ export default class Person { // person objects should modify their internal jso
 	tickLifeChoices() {
 		let prevAgeYears = Math.floor((this.city.simulation.prevTick - this.json.birthTick) / ticksPerYear)
 		let newAgeYears = Math.floor((this.city.simulation.tick - this.json.birthTick) / ticksPerYear);
-		if (newAgeYears > prevAgeYears && newAgeYears % 5 === 0) {
+		if (newAgeYears > prevAgeYears && newAgeYears % Constants.findNewJobEveryNYears === 0) {
 			this.findJob();
 			this.findHome();
 		}

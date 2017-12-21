@@ -680,16 +680,17 @@ export let defaultCity = {
   },
   "agents": {
     "people": {
-      "p000": newAgent(),
-			"p001": newAgent(),
-			"p002": newAgent(),
-			"p003": newAgent(),
-			"p004": newAgent(),
-			"p005": newAgent(),
-			"p006": newAgent(),
-			"p007": newAgent(),
-			"p008": newAgent(),
-			"p009": newAgent(),
+      "p0": newAgent(),
+			"p1": newAgent(),
+			"p2": newAgent(),
+			"p3": newAgent(),
+			"p4": newAgent(),
+			"p5": newAgent(),
+			"p6": newAgent(),
+			"p7": newAgent(),
+			"p8": newAgent(),
+			"p9": newAgent(),
+			"p10": newAgent(),
     }
   },
   "simulation": {

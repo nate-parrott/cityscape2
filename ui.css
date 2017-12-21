@@ -2,6 +2,11 @@ html, body {
     overflow: hidden;
     margin: 0;
     font-family: 'Montserrat', sans-serif;
+    --background-color: #FFF;
+    --residential-color: #B3D28A;
+    --commercial-color: #ADD1FC;
+    --person-color: #B5A8BA;
+    --transit-color: #EB5757;
 }
 
 #reactContainer {
@@ -35,7 +40,7 @@ html, body {
     color: #FFF;
     display: flex;
     position: relative;
-    max-width: 45em;
+    max-width: 56em;
 }
 
 .NarratorTitle {
@@ -58,12 +63,35 @@ html, body {
 
 .NarratorContainer p {
     font-size: .875;
+    line-height: 1.8;
+    margin: 1em 0;
 }
 
 .NarratorInstruction {
     color: rgba(255, 255, 255, 0.6);
     font-style: italic;
 }
+
+.definition {
+    font-weight: bold;
+}
+
+.textResidential {
+    color: var(--residential-color);
+}
+
+.textCommercial {
+    color: var(--commercial-color);
+}
+
+.textPerson {
+    color: var(--person-color);
+}
+
+.textTransit {
+    color: var(--transit-color);
+}
+
 #bottomContent {
     position: fixed;
     width: 100vw;

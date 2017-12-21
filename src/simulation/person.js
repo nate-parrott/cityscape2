@@ -45,8 +45,11 @@ export default class Person { // person objects should modify their internal jso
 		let job = this.getJob();
 		if (this.city.isMorning() && job) {
 			// go to work:
+			const workDurationMin = workDuration - .5;
+			const workDurationMax = workDuration + .5;
+			const stochasticWorkDuration = workDurationMin + (workDurationMax - workDurationMin) * Math.random();
 			this.tweet("off 2 work!! 💪");
-			return [{actionId: 'travel', buildingId: this.json.workplaceId}, {actionId: 'work', hoursRemaining: workDuration, job: job}];
+			return [{actionId: 'travel', buildingId: this.json.workplaceId}, {actionId: 'work', hoursRemaining: stochasticWorkDuration, job: job}];
 		} else if (this.json.satisfaction.rest < restThresholdToSleepAtHome && this.json.homeId) {
 			// go home and sleep
 			this.tweet("gonna hit the hecking SACK once i get home innit 💤");

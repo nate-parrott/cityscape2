@@ -47,6 +47,12 @@ export default class Network {
 	}
 	edgeLength(edgeId) {
 		let {startId, endId} = this.edges[edgeId];
+		if(!this.nodes[startId]) {
+		  console.error("node not found", startId)
+		}
+		if(!this.nodes[endId]) {
+		  console.error("node not found", endId)
+		}
 		let startPos = this.nodes[startId].coordinate;
 		let endPos = this.nodes[endId].coordinate;
 		return dist(startPos, endPos);

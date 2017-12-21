@@ -87,6 +87,37 @@ class RCIPalette extends React.PureComponent {
     }
 }
 
+class DataPalette extends React.PureComponent {
+    constructor(props) {
+        super(props);
+        
+        this.actions = [
+        {
+            id: "inspect",
+            name: "Inspect",
+            tool: Tools.InspectTool,
+        }
+        ]
+    }
+    
+    render() {
+        const ToolsetActions = this.actions.map((action) => 
+            <ActionCard
+                key={action.id}
+                toolset={this.props.currentToolset}
+                action={action}
+                active={this.props.currentAction && this.props.currentAction.id == action.id}
+                onSetTool={this.props.onSetTool}/>
+        )
+        
+        return (
+            <div className="ToolsetPalette">
+                {ToolsetActions}
+            </div>
+        )
+    }
+}
+
 function ActionCard(props) {
     const color = props.action.color ? props.action.color : props.toolset.color;
     const style={
@@ -118,6 +149,12 @@ const toolsets = [
     color: "#B3D28A",
     icon: "ic_home_black_24px.svg",
     palette: RCIPalette,
+},
+{
+    name: "Data",
+    color: "rgb(196, 196, 196)",
+    icon: "ic_search_black_24px.svg",
+    palette: DataPalette,
 }
 ]
 

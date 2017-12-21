@@ -10,7 +10,7 @@ let Constants = {
     morningHours: [6, 12],
     // distance:
     walkingSpeedUnitsPerHour: 10,
-    trainSpeedUnitsPerHour: 40,
+    trainSpeedUnitsPerHour: 12,
 		trainStopHours: 0.2, // 1 second
     // people:
     lifespanYears: 80,

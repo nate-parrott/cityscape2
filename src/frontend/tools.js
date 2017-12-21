@@ -85,9 +85,9 @@ const CreateBuildingTool = class extends Tool {
     }
 }
 
-const DisplayInfoTool = class extends Tool {
-    constructor(cityscape) {
-        super(cityscape);
+const InspectTool = class extends Tool {
+    constructor(cityscape, options) {
+        super(cityscape, options);
     }
     
     onClick(evt) {
@@ -104,4 +104,4 @@ const DisplayInfoTool = class extends Tool {
     }
 }
 
-module.exports = {CreateEdgeTool, CreateBuildingTool, DisplayInfoTool};
+module.exports = {CreateEdgeTool, CreateBuildingTool, InspectTool};

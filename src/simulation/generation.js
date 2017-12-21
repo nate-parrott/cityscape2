@@ -29,22 +29,31 @@ let generateJob = (id) => {
 }
 
 export let newApartment = () => {
+  const maxApartmentHeight = 2;
+  const minApartmentHeight = 1;
+  
+  const maxApartmentSetback = .8;
+  const minApartmentSetback = .6;
+  
   return {
     typeId: 'home',
 		name: apartmentName(),
     occupancy: 5,
     occupants: [],
     rent: minDailyRent + (maxDailyRent - minDailyRent) * Math.random(),
-    dimension: {x: 1, y: 0.75, z: 1},
+    dimension: {x: .8, y: minApartmentSetback + (maxApartmentSetback - minApartmentSetback) * Math.random(), z: minApartmentHeight + (maxApartmentHeight - minApartmentHeight) * Math.random()},
     coordinate: null,
     edgeId: null
   }
 }
 
 export let newWorkplace = () => {
+  const maxWorkplaceHeight = 4;
+  const minWorkplaceHeight = 1.5;
+  
   return {
     typeId: 'work',
-    dimension: {x: 1, y: 1, z: 2},
+    dimension: {x: .8, y: .8, z: minWorkplaceHeight + (maxWorkplaceHeight - minWorkplaceHeight) * Math.random()},
     name: businessName(),
     jobs: {j1: generateJob('service_employee'), j2: generateJob('service_employee'), j3: generateJob('service_employee'), j4: generateJob('service_manager')},
     coordinate: null,
@@ -70,7 +79,7 @@ export let newAgent = (ageFraction) => {
     wealth: 5,
 		name: personName(),
     position: {
-      edgeId: "e000",
+      edgeId: "e0",
       distance: Math.random(),
     },
 		onTrainId: null,

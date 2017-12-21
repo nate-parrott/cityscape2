@@ -89,6 +89,9 @@ const buildingTypes = {
     },
     "home": {
         material: residentialBuildingMaterial,
+    },
+    "subwayStation": {
+        material: trainMaterial,
     }
 }
 
@@ -393,6 +396,7 @@ class SimStateGroupManager extends Component {
                     trainMesh.userData.posTween = new TWEEN.Tween(trainMesh.position)
                         .to(coordinate, this.props.realTimePerTick)
                         .onComplete(() => trainMesh.userData.posTween = undefined)
+                        // .easing(TWEEN.Easing.Quadratic.InOut)
                         .start();
 
                     const forwardVector = new THREE.Vector2(coordinate.x - trainMesh.position.x, coordinate.y - trainMesh.position.y);
